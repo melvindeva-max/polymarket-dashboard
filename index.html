@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Polymarket Scout ‚Äî Live Dashboard</title>
+<title>Polymarket Scout - Live Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -58,7 +58,42 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .chart-container{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
 .chart-container h3{font-size:16px;font-weight:600;margin-bottom:16px}
 .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-@media(max-width:768px){.chart-row{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){
+  .chart-row{grid-template-columns:1fr}
+  .card-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .container{padding:12px 16px}
+  .header{padding:12px 16px}
+  .header h1{font-size:18px}
+  .header .meta{font-size:11px;flex-wrap:wrap;gap:6px}
+  .tabs{padding:8px 12px;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{padding:7px 12px;font-size:12px;white-space:nowrap;flex-shrink:0}
+  .section-title{font-size:16px}
+  .portfolio-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px}
+  .portfolio-table{min-width:700px}
+  .portfolio-table th,.portfolio-table td{padding:8px 10px;font-size:12px}
+  .stats-row .stat-card{padding:14px}
+  .stats-row .value{font-size:22px}
+  .rec-card{padding:16px}
+  .rec-header{flex-wrap:wrap;gap:8px}
+  .rec-meta{flex-wrap:wrap;gap:8px}
+  .rec-amounts{grid-template-columns:1fr 1fr}
+  .avoid-card{padding:12px}
+  .market-table th,.market-table td{padding:8px 10px;font-size:12px}
+  .market-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .market-table{min-width:600px}
+  .chart-container{padding:14px}
+  .checklist li{font-size:13px;padding:8px 10px}
+  .header-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+  .portfolio-value-header{font-size:16px}
+}
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .header h1{font-size:16px}
+  .tab{padding:6px 10px;font-size:11px}
+  .portfolio-table th,.portfolio-table td{padding:6px 8px;font-size:11px}
+}
 .avoid-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px}
 .avoid-card h4{font-size:15px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
 .avoid-card p{font-size:13px;color:var(--muted);line-height:1.5}
@@ -160,9 +195,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 
 <div style="overflow-x:auto">
-<table class="portfolio-table">
+<div class="portfolio-table-wrap"><table class="portfolio-table">
 <thead>
-<tr><th>Market</th><th>Shares</th><th>Avg Price</th><th>Current Price</th><th>Current Value</th><th>P/L</th><th>P/L %</th><th style="color:var(--green)">If WIN ‚úì</th><th style="color:var(--red)">If LOSE ‚úó</th><th>Expires</th></tr>
+<tr><th>Market</th><th>Shares</th><th>Avg Price</th><th>Current Price</th><th>Current Value</th><th>P/L</th><th>P/L %</th><th style="color:var(--green)">If WIN</th><th style="color:var(--red)">If LOSE</th><th>Expires</th></tr>
 </thead>
 <tbody id="portfolioBody">
 <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:40px">Loading live portfolio data from Polymarket...</td></tr>
@@ -178,10 +213,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <td></td>
 </tr>
 </tfoot>
-</table>
+</table></div>
 </div>
 
-<div class="section-title">New Recommendations ‚Äî Fully Deployed</div>
+<div class="section-title">New Recommendations &mdash; Fully Deployed</div>
 <div class="chart-row">
 <div class="chart-container">
 <h3>Allocation Breakdown</h3>
@@ -195,12 +230,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <div class="card-grid">
 
-<!-- Rec 1: Already holding Warsh & MicroStrategy ‚Äî replaced with Hungary -->
+<!-- Rec 1: Already holding Warsh & MicroStrategy &mdash; replaced with Hungary -->
 <div class="rec-card">
 <div class="top">
 <div>
 <span class="badge badge-buy">BUY YES</span>
-<h3>P&eacute;ter Magyar ‚Äî Next Hungary PM</h3>
+<h3>P&eacute;ter Magyar &mdash; Next Hungary PM</h3>
 </div>
 <div class="price">65.5&cent;</div>
 </div>
@@ -217,7 +252,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="risk-dots"><div class="dot active"></div><div class="dot active"></div><div class="dot"></div></div>
 </div>
 <div class="confidence-bar"><div class="fill" style="width:75%;background:var(--yellow)"></div></div>
-<div class="thesis">Magyar's Tisza party leads Orb&aacute;n's Fidesz 58-35% among decided voters. After 16 years of single-party rule, youth turnout and opposition consolidation favor regime change. Market at 65.5% underprices the polling lead ‚Äî 52% return in just 7 days. $12.6M volume ensures liquidity.</div>
+<div class="thesis">Magyar's Tisza party leads Orb&aacute;n's Fidesz 58-35% among decided voters. After 16 years of single-party rule, youth turnout and opposition consolidation favor regime change. Market at 65.5% underprices the polling lead &mdash; 52% return in just 7 days. $12.6M volume ensures liquidity.</div>
 </div>
 
 <!-- Rec 2 -->
@@ -295,7 +330,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="thesis">Despite elevated tensions in the Middle East, direct Gulf State military action against Iran is extremely unlikely within 10 days. Diplomatic channels remain active and no Gulf state has the unilateral appetite for direct conflict. Quick resolution timeline means fast capital turnover.</div>
 </div>
 
-<!-- Rec 5 ‚Äî Already holding MicroStrategy NO, replaced with Iran action -->
+<!-- Rec 5 &mdash; Already holding MicroStrategy NO, replaced with Iran action -->
 <div class="rec-card">
 <div class="top">
 <div>
@@ -317,7 +352,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="risk-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
 </div>
 <div class="confidence-bar"><div class="fill" style="width:92%;background:var(--green)"></div></div>
-<div class="thesis">Iran conducted strikes on Apr 4 (99% resolved). The Apr 6 market follows the same escalation pattern with Trump's ultimatum for Iran to reopen the Strait of Hormuz by Monday. Resolves tomorrow ‚Äî fast 11% overnight return with $90.6M in related volume.</div>
+<div class="thesis">Iran conducted strikes on Apr 4 (99% resolved). The Apr 6 market follows the same escalation pattern with Trump's ultimatum for Iran to reopen the Strait of Hormuz by Monday. Resolves tomorrow &mdash; fast 11% overnight return with $90.6M in related volume.</div>
 </div>
 
 <!-- Rec 6 (Longshot) -->
@@ -363,12 +398,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px">
 <ul class="checklist" id="checklist">
 <li onclick="toggleCheck(this)"><input type="checkbox"> Review all 6 recommendations above</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Magyar Hungary PM YES ‚Äî $5.00 @ 65.5&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Democrats UT-01 YES ‚Äî $3.50 @ 89&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Bitcoin Dip $55K YES ‚Äî $2.50 @ 78&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Gulf State vs Iran NO ‚Äî $2.00 @ 84&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Iran Action Israel Apr 6 YES ‚Äî $2.50 @ 90&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY DeSantis Presidential Run YES ‚Äî $2.22 @ 9.5&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Magyar Hungary PM YES &mdash; $5.00 @ 65.5&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Democrats UT-01 YES &mdash; $3.50 @ 89&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Bitcoin Dip $55K YES &mdash; $2.50 @ 78&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Gulf State vs Iran NO &mdash; $2.00 @ 84&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Iran Action Israel Apr 6 YES &mdash; $2.50 @ 90&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY DeSantis Presidential Run YES &mdash; $2.22 @ 9.5&cent;</li>
 <li onclick="toggleCheck(this)"><input type="checkbox"> Verify all orders filled at target prices</li>
 </ul>
 </div>
@@ -378,15 +413,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 <div class="avoid-card">
 <h4><span class="badge badge-avoid">AVOID</span> Weather Temperature Markets</h4>
-<p>These markets (Toronto, Mexico City, Beijing, Shenzhen temps) resolve within 24-48 hours and are essentially coin flips. No reliable edge exists ‚Äî meteorological models have wide error bands at the exact-degree level. Low volume and high variance make these negative EV plays.</p>
+<p>These markets (Toronto, Mexico City, Beijing, Shenzhen temps) resolve within 24-48 hours and are essentially coin flips. No reliable edge exists &mdash; meteorological models have wide error bands at the exact-degree level. Low volume and high variance make these negative EV plays.</p>
 </div>
 <div class="avoid-card">
 <h4><span class="badge badge-avoid">AVOID</span> Elon Musk Tweet Count (115-139 tweets, Apr 6-8)</h4>
-<p>Pure noise market. Predicting an exact tweet range for a 3-day window is essentially gambling. Musk's posting patterns are erratic and no model can reliably predict this. The 11% YES price is a trap ‚Äî the range is too narrow.</p>
+<p>Pure noise market. Predicting an exact tweet range for a 3-day window is essentially gambling. Musk's posting patterns are erratic and no model can reliably predict this. The 11% YES price is a trap &mdash; the range is too narrow.</p>
 </div>
 <div class="avoid-card">
 <h4><span class="badge badge-avoid">AVOID</span> GTA VI Released Before June 2026</h4>
-<p>At 1.45&cent; YES, this is already correctly priced at near-zero. Rockstar has given no signals of imminent release and the game isn't expected until late 2026. No value on either side ‚Äî the NO shares at 98.55&cent; offer minimal returns for 2 months of locked capital.</p>
+<p>At 1.45&cent; YES, this is already correctly priced at near-zero. Rockstar has given no signals of imminent release and the game isn't expected until late 2026. No value on either side &mdash; the NO shares at 98.55&cent; offer minimal returns for 2 months of locked capital.</p>
 </div>
 <div class="avoid-card">
 <h4><span class="badge badge-avoid">AVOID</span> Esports Match Markets (LoL, Valorant)</h4>
@@ -394,7 +429,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </div>
 <div class="avoid-card">
 <h4><span class="badge badge-avoid">AVOID</span> US Confirms Aliens Exist Before 2027</h4>
-<p>Despite the hype around UAP hearings, this market at 16.5&cent; is overpriced. "Confirm aliens exist" is a very high bar ‚Äî even new disclosures about UAPs would likely not meet the resolution criteria. Capital would be locked for 9+ months.</p>
+<p>Despite the hype around UAP hearings, this market at 16.5&cent; is overpriced. "Confirm aliens exist" is a very high bar &mdash; even new disclosures about UAPs would likely not meet the resolution criteria. Capital would be locked for 9+ months.</p>
 </div>
 
 </div>
@@ -402,14 +437,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <!-- ==================== QUICK TRADES TAB ==================== -->
 <div class="panel" id="quicktrades">
 
-<div class="section-title" style="color:var(--yellow)">Quick Trades ‚Äî Markets Ending This Week</div>
+<div class="section-title" style="color:var(--yellow)">Quick Trades &mdash; Markets Ending This Week</div>
 <p style="color:var(--muted);margin-bottom:20px;font-size:14px">These markets resolve within 1-7 days. Fast capital turnover, quick profits. Sized for your $28.22 available balance.</p>
 
 <div class="stats-row">
 <div class="stat-card" style="border-color:var(--yellow)">
 <div class="label">Markets Ending This Week</div>
 <div class="value" style="color:var(--yellow)">8</div>
-<div class="sub">Apr 5 ‚Äî Apr 12, 2026</div>
+<div class="sub">Apr 5 &mdash; Apr 12, 2026</div>
 </div>
 <div class="stat-card" style="border-color:var(--green)">
 <div class="label">Quick Trade Budget</div>
@@ -424,7 +459,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="stat-card" style="border-color:var(--accent)">
 <div class="label">Best Opportunity</div>
 <div class="value" style="color:var(--accent)">Hungary</div>
-<div class="sub">Election Apr 12 ‚Äî $12.6M vol</div>
+<div class="sub">Election Apr 12 &mdash; $12.6M vol</div>
 </div>
 </div>
 
@@ -435,7 +470,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="top">
 <div>
 <span class="badge badge-buy">BUY YES</span> <span class="badge" style="background:rgba(245,158,11,.15);color:var(--yellow)">7 DAYS</span>
-<h3>P&eacute;ter Magyar ‚Äî Next Hungary PM</h3>
+<h3>P&eacute;ter Magyar &mdash; Next Hungary PM</h3>
 </div>
 <div class="price">65.5&cent;</div>
 </div>
@@ -452,7 +487,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="risk-dots"><div class="dot active"></div><div class="dot active"></div><div class="dot"></div></div>
 </div>
 <div class="confidence-bar"><div class="fill" style="width:75%;background:var(--yellow)"></div></div>
-<div class="thesis">Magyar's Tisza party leads Orb&aacute;n's Fidesz 58-35% among decided voters per latest Med&iacute;an polls. After 16 years of Fidesz rule, youth turnout surge and opposition consolidation favor a change. Market at 65.5% still underprices the polling lead ‚Äî 52% return in 7 days if polls hold. Volume: $12.6M.</div>
+<div class="thesis">Magyar's Tisza party leads Orb&aacute;n's Fidesz 58-35% among decided voters per latest Med&iacute;an polls. After 16 years of Fidesz rule, youth turnout surge and opposition consolidation favor a change. Market at 65.5% still underprices the polling lead &mdash; 52% return in 7 days if polls hold. Volume: $12.6M.</div>
 </div>
 
 <!-- Quick Trade 2: Iran Israel Apr 6 -->
@@ -477,7 +512,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="risk-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
 </div>
 <div class="confidence-bar"><div class="fill" style="width:92%;background:var(--green)"></div></div>
-<div class="thesis">Iran already conducted strikes on Apr 4 with 99% resolution. The Apr 6 market follows the same pattern ‚Äî Trump's ultimatum for Iran to reopen the Strait of Hormuz by Monday creates escalation pressure. At 90&cent; with high confidence, this is a fast 11% overnight return. $90.6M in related market volume signals strong consensus.</div>
+<div class="thesis">Iran already conducted strikes on Apr 4 with 99% resolution. The Apr 6 market follows the same pattern &mdash; Trump's ultimatum for Iran to reopen the Strait of Hormuz by Monday creates escalation pressure. At 90&cent; with high confidence, this is a fast 11% overnight return. $90.6M in related market volume signals strong consensus.</div>
 </div>
 
 <!-- Quick Trade 3: Gulf State Iran NO -->
@@ -520,14 +555,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="item"><span class="lbl">If Win</span><span class="val positive">$3.88</span></div>
 <div class="item"><span class="lbl">If Lose</span><span class="val negative">-$2.00</span></div>
 <div class="item"><span class="lbl">ROI if Win</span><span class="val positive">+94.2%</span></div>
-<div class="item"><span class="lbl">Resolves</span><span class="val" style="color:var(--green)">Tonight ‚Äî Apr 5</span></div>
+<div class="item"><span class="lbl">Resolves</span><span class="val" style="color:var(--green)">Tonight &mdash; Apr 5</span></div>
 </div>
 <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
 <div>Confidence: <strong>55%</strong></div>
 <div class="risk-dots"><div class="dot active"></div><div class="dot active"></div><div class="dot active"></div></div>
 </div>
 <div class="confidence-bar"><div class="fill" style="width:55%;background:var(--yellow)"></div></div>
-<div class="thesis">Coin-flip game with massive upside. Suns and Bulls have both been in high-scoring games recently. At 51.5&cent; the line is razor-thin ‚Äî slight edge on the Over given both teams' pace. $47.9K liquidity means easy entry/exit. Resolves tonight for instant capital recycling.</div>
+<div class="thesis">Coin-flip game with massive upside. Suns and Bulls have both been in high-scoring games recently. At 51.5&cent; the line is razor-thin &mdash; slight edge on the Over given both teams' pace. $47.9K liquidity means easy entry/exit. Resolves tonight for instant capital recycling.</div>
 </div>
 
 <!-- Quick Trade 5: Orban NO -->
@@ -535,7 +570,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="top">
 <div>
 <span class="badge badge-sell">SELL / BUY NO</span> <span class="badge" style="background:rgba(245,158,11,.15);color:var(--yellow)">7 DAYS</span>
-<h3>Viktor Orb&aacute;n Next Hungary PM ‚Äî NO</h3>
+<h3>Viktor Orb&aacute;n Next Hungary PM &mdash; NO</h3>
 </div>
 <div class="price">65.5&cent;</div>
 </div>
@@ -602,19 +637,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div class="section-title" style="color:var(--yellow)">Quick Trade Execution</div>
 <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px">
 <ul class="checklist" id="quickChecklist">
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Magyar Next Hungary PM YES ‚Äî $5.00 @ 65.5&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Orb&aacute;n Next Hungary PM NO ‚Äî $3.00 @ 65.5&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Iran Action on Israel Apr 6 YES ‚Äî $3.50 @ 90&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Gulf State vs Iran NO ‚Äî $2.50 @ 84&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Suns vs Bulls OVER 238.5 ‚Äî $2.00 @ 51.5&cent;</li>
-<li onclick="toggleCheck(this)"><input type="checkbox"> BUY US-Iran Ceasefire Apr 15 NO ‚Äî $1.72 @ 75&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Magyar Next Hungary PM YES &mdash; $5.00 @ 65.5&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Orb&aacute;n Next Hungary PM NO &mdash; $3.00 @ 65.5&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Iran Action on Israel Apr 6 YES &mdash; $3.50 @ 90&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Gulf State vs Iran NO &mdash; $2.50 @ 84&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY Suns vs Bulls OVER 238.5 &mdash; $2.00 @ 51.5&cent;</li>
+<li onclick="toggleCheck(this)"><input type="checkbox"> BUY US-Iran Ceasefire Apr 15 NO &mdash; $1.72 @ 75&cent;</li>
 </ul>
 </div>
 
 <div style="background:rgba(245,158,11,.08);border:1px solid var(--yellow);border-radius:12px;padding:16px;margin-bottom:24px">
 <p style="font-size:13px;color:var(--yellow);font-weight:600;margin-bottom:6px">Quick Trade Strategy Notes</p>
 <p style="font-size:13px;color:var(--muted);line-height:1.6">
-The Hungary election is the headline play ‚Äî 52% return potential in 7 days with strong polling backing. The geopolitics cluster (Iran/Gulf) offers fast resolution with high confidence on the NO sides. The NBA game is a true coin flip tonight but recycles capital instantly. <strong>Priority order: Hungary bets first, then Iran plays, NBA last.</strong>
+The Hungary election is the headline play &mdash; 52% return potential in 7 days with strong polling backing. The geopolitics cluster (Iran/Gulf) offers fast resolution with high confidence on the NO sides. The NBA game is a true coin flip tonight but recycles capital instantly. <strong>Priority order: Hungary bets first, then Iran plays, NBA last.</strong>
 </p>
 </div>
 
@@ -743,13 +778,13 @@ The Hungary election is the headline play ‚Äî 52% return potential in 7 days
 </div>
 <div class="opp-card" data-cat="geopolitics">
 <div class="cat">Geopolitics</div>
-<h4>Gulf State Military Action vs Iran ‚Äî NO</h4>
+<h4>Gulf State Military Action vs Iran &mdash; NO</h4>
 <div class="odds">84% NO</div>
 <div class="meta-row"><span>Risk: Med</span><span>Vol: $98.6K</span><span>Resolves: Apr 30</span></div>
 </div>
 <div class="opp-card" data-cat="finance">
 <div class="cat">Finance / Crypto</div>
-<h4>MicroStrategy Sells BTC by Dec 2026 ‚Äî NO</h4>
+<h4>MicroStrategy Sells BTC by Dec 2026 &mdash; NO</h4>
 <div class="odds">86.5% NO</div>
 <div class="meta-row"><span>Risk: Med</span><span>Vol: $452K</span><span>Resolves: Dec 2026</span></div>
 </div>
@@ -826,7 +861,7 @@ The Hungary election is the headline play ‚Äî 52% return potential in 7 days
 </thead>
 <tbody id="marketBody">
 </tbody>
-</table>
+</table></div>
 </div>
 </div>
 
@@ -839,9 +874,9 @@ The Hungary election is the headline play ‚Äî 52% return potential in 7 days
 <p>For a ~$80 portfolio, follow these guidelines to manage risk effectively:</p>
 <ul>
 <li><strong>Max single position:</strong> 20% of total portfolio ($16). Never risk more than this on any single market.</li>
-<li><strong>High-confidence bets (85%+ odds):</strong> Allocate 40-50% of available capital. These are your bread and butter ‚Äî low margin but high win rate.</li>
+<li><strong>High-confidence bets (85%+ odds):</strong> Allocate 40-50% of available capital. These are your bread and butter &mdash; low margin but high win rate.</li>
 <li><strong>Medium-confidence bets (60-84%):</strong> Allocate 35-40% of available capital. Better returns per share but higher variance.</li>
-<li><strong>Speculative longshots (&lt;40%):</strong> Cap at 15% of available capital. These are lottery tickets ‚Äî size accordingly.</li>
+<li><strong>Speculative longshots (&lt;40%):</strong> Cap at 15% of available capital. These are lottery tickets &mdash; size accordingly.</li>
 <li><strong>Always keep 10-15% cash reserve</strong> for opportunistic plays when markets move quickly.</li>
 </ul>
 </div>
@@ -1057,7 +1092,7 @@ function getCategory(marketTitle) {
   if (n.includes('fed chair') || n.includes('warsh')) return 'finance';
   if (n.includes('iran') || n.includes('gulf') || n.includes('ceasefire') || n.includes('israel') || n.includes('military action')) return 'geopolitics';
   if (n.includes('claude') || n.includes('ai model') || n.includes('anthropic') || n.includes('gemini')) return 'tech';
-  if (n.includes('hungary') || n.includes('magyar') || n.includes('orban') || n.includes('orb√°n') || n.includes('democrat') || n.includes('desantis') || n.includes('macron') || n.includes('trump') || n.includes('president')) return 'politics';
+  if (n.includes('hungary') || n.includes('magyar') || n.includes('orban') || n.includes('orb\u00e1n') || n.includes('democrat') || n.includes('desantis') || n.includes('macron') || n.includes('trump') || n.includes('president')) return 'politics';
   return 'culture';
 }
 
@@ -1158,7 +1193,7 @@ function renderPortfolio(positions) {
     // Category header row
     rows += `<tr style="background:rgba(99,102,241,0.08)">
       <td colspan="10" style="padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:${catColor}">
-        ‚ñ∏ ${cat.toUpperCase()}
+        &rsaquo; ${cat.toUpperCase()}
       </td>
     </tr>`;
 
