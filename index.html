@@ -1204,7 +1204,7 @@ function renderPortfolio(positions) {
       const pnl = pos.cashPnl || 0;
       const pnlPct = pos.percentPnl || 0;
 
-      // Potential win: receive $1/share ‚Üí profit = shares - cost
+      // Potential win: receive $1/share -> profit = shares - cost
       const potentialWin = pos.size - cost;
       // Potential loss: lose current value
       const potentialLose = -currentValue;
