@@ -162,10 +162,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <div style="overflow-x:auto">
 <table class="portfolio-table">
 <thead>
-<tr><th>Market</th><th>Shares</th><th>Avg Price</th><th>Current Price</th><th>Current Value</th><th>P/L</th><th>P/L %</th><th>Expires</th></tr>
+<tr><th>Market</th><th>Shares</th><th>Avg Price</th><th>Current Price</th><th>Current Value</th><th>P/L</th><th>P/L %</th><th style="color:var(--green)">If WIN ‚úì</th><th style="color:var(--red)">If LOSE ‚úó</th><th>Expires</th></tr>
 </thead>
 <tbody id="portfolioBody">
-<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:40px">Loading live portfolio data from Polymarket...</td></tr>
+<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:40px">Loading live portfolio data from Polymarket...</td></tr>
 </tbody>
 <tfoot>
 <tr style="font-weight:700;border-top:2px solid var(--border)" id="portfolioFooter">
@@ -173,6 +173,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 <td id="footTotalValue">--</td>
 <td id="footTotalPnl">--</td>
 <td id="footTotalPnlPct">--</td>
+<td id="footTotalWin" style="color:var(--green)">--</td>
+<td id="footTotalLose" style="color:var(--red)">--</td>
 <td></td>
 </tr>
 </tfoot>
@@ -1126,44 +1128,82 @@ function renderPortfolio(positions) {
   let totalValue = 0;
   let totalCost = 0;
   let totalPnl = 0;
+  let totalWin = 0;
+  let totalLose = 0;
   const categories = new Set();
 
-  // Sort by currentValue descending
-  active.sort((a, b) => (b.currentValue || 0) - (a.currentValue || 0));
-
-  let rows = '';
+  // Group by category
+  const grouped = {};
   active.forEach(pos => {
     const cat = getCategory(pos.title);
     categories.add(cat);
-    const shortName = getShortName(pos.title, pos.outcome);
-    const currentValue = pos.currentValue || (pos.size * pos.curPrice);
-    const cost = pos.initialValue || (pos.size * pos.avgPrice);
-    const pnl = pos.cashPnl || 0;
-    const pnlPct = pos.percentPnl || 0;
-    totalValue += currentValue;
-    totalCost += cost;
-    totalPnl += pnl;
-
-    const pnlClass = pnl >= 0 ? 'positive' : 'negative';
-    const pnlSign = pnl >= 0 ? '+' : '';
-    const priceUp = pos.curPrice > pos.avgPrice;
-    const priceStyle = priceUp ? 'color:var(--green)' : (pos.curPrice < pos.avgPrice ? 'color:var(--red)' : '');
-    const expiry = getExpiry(pos.endDate);
-    const expiryStyle = expiry.color ? `color:${expiry.color}` : '';
-
-    rows += `<tr>
-      <td><span class="pill pill-${cat}">${cat}</span> ${shortName}</td>
-      <td>${pos.size.toFixed(1)}</td>
-      <td>$${pos.avgPrice.toFixed(3)}</td>
-      <td style="${priceStyle}">$${pos.curPrice.toFixed(3)}</td>
-      <td>$${currentValue.toFixed(2)}</td>
-      <td class="${pnlClass}">${pnlSign}$${pnl.toFixed(2)}</td>
-      <td class="${pnlClass}">${pnlSign}${pnlPct.toFixed(1)}%</td>
-      <td style="${expiryStyle}">${expiry.text || expiry}</td>
-    </tr>`;
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(pos);
   });
 
-  tbody.innerHTML = rows || '<tr><td colspan="8" style="text-align:center;color:var(--muted)">No active positions found</td></tr>';
+  // Sort categories by total value descending
+  const catOrder = Object.keys(grouped).sort((a, b) => {
+    const sumA = grouped[a].reduce((s, p) => s + (p.currentValue || p.size * p.curPrice), 0);
+    const sumB = grouped[b].reduce((s, p) => s + (p.currentValue || p.size * p.curPrice), 0);
+    return sumB - sumA;
+  });
+
+  // Category label colours map
+  const catColors = {sports:'#6366f1',politics:'#f59e0b',crypto:'#10b981',finance:'#3b82f6',tech:'#8b5cf6',geopolitics:'#ef4444',entertainment:'#ec4899',culture:'#14b8a6'};
+
+  let rows = '';
+  catOrder.forEach(cat => {
+    const catPositions = grouped[cat].sort((a,b)=>(b.currentValue||0)-(a.currentValue||0));
+    const catColor = catColors[cat] || '#6366f1';
+    // Category header row
+    rows += `<tr style="background:rgba(99,102,241,0.08)">
+      <td colspan="10" style="padding:8px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:${catColor}">
+        ‚ñ∏ ${cat.toUpperCase()}
+      </td>
+    </tr>`;
+
+    catPositions.forEach(pos => {
+      const shortName = getShortName(pos.title, pos.outcome);
+      const currentValue = pos.currentValue || (pos.size * pos.curPrice);
+      const cost = pos.initialValue || (pos.size * pos.avgPrice);
+      const pnl = pos.cashPnl || 0;
+      const pnlPct = pos.percentPnl || 0;
+
+      // Potential win: receive $1/share ‚Üí profit = shares - cost
+      const potentialWin = pos.size - cost;
+      // Potential loss: lose current value
+      const potentialLose = -currentValue;
+
+      totalValue += currentValue;
+      totalCost += cost;
+      totalPnl += pnl;
+      totalWin += potentialWin;
+      totalLose += potentialLose;
+
+      const pnlClass = pnl >= 0 ? 'positive' : 'negative';
+      const pnlSign = pnl >= 0 ? '+' : '';
+      const priceUp = pos.curPrice > pos.avgPrice;
+      const priceStyle = priceUp ? 'color:var(--green)' : (pos.curPrice < pos.avgPrice ? 'color:var(--red)' : '');
+      const expiry = getExpiry(pos.endDate);
+      const expiryStyle = expiry.color ? `color:${expiry.color}` : '';
+      const winSign = potentialWin >= 0 ? '+' : '';
+
+      rows += `<tr>
+        <td><span class="pill pill-${cat}">${cat}</span> ${shortName}</td>
+        <td>${pos.size.toFixed(1)}</td>
+        <td>$${pos.avgPrice.toFixed(3)}</td>
+        <td style="${priceStyle}">$${pos.curPrice.toFixed(3)}</td>
+        <td>$${currentValue.toFixed(2)}</td>
+        <td class="${pnlClass}">${pnlSign}$${pnl.toFixed(2)}</td>
+        <td class="${pnlClass}">${pnlSign}${pnlPct.toFixed(1)}%</td>
+        <td style="color:var(--green);font-weight:600">${winSign}$${potentialWin.toFixed(2)}</td>
+        <td style="color:var(--red);font-weight:600">-$${currentValue.toFixed(2)}</td>
+        <td style="${expiryStyle}">${expiry.text || expiry}</td>
+      </tr>`;
+    });
+  });
+
+  tbody.innerHTML = rows || '<tr><td colspan="10" style="text-align:center;color:var(--muted)">No active positions found</td></tr>';
 
   // Footer totals
   const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost * 100) : 0;
@@ -1174,6 +1214,9 @@ function renderPortfolio(positions) {
   document.getElementById('footTotalPnl').textContent = footSign + '$' + totalPnl.toFixed(2);
   document.getElementById('footTotalPnlPct').className = footPnlClass;
   document.getElementById('footTotalPnlPct').textContent = footSign + totalPnlPct.toFixed(1) + '%';
+  const winSign2 = totalWin >= 0 ? '+' : '';
+  document.getElementById('footTotalWin').textContent = winSign2 + '$' + totalWin.toFixed(2);
+  document.getElementById('footTotalLose').textContent = '-$' + Math.abs(totalLose).toFixed(2);
 
   // Update stat cards
   const cashEstimate = 0.72; // Cash not available from API, show estimate
