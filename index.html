@@ -6,511 +6,1159 @@
 <title>Polymarket Scout Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0e17;--card:#111827;--border:#1e2a4a;--text:#e1e5ee;--muted:#8892a4;--accent:#6366f1;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--orange:#f97316;--cyan:#06b6d4}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
-.header{background:linear-gradient(135deg,#0f172a,#1e1b4b);padding:24px 32px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.header h1{font-size:1.6rem;background:linear-gradient(90deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header .meta{color:var(--muted);font-size:.85rem}
-.header .meta span{color:var(--green)}
-.tabs{display:flex;gap:4px;padding:12px 32px;background:#0d1220;border-bottom:1px solid var(--border);overflow-x:auto}
-.tab{padding:10px 20px;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:500;color:var(--muted);transition:all .2s;white-space:nowrap;border:1px solid transparent}
-.tab:hover{color:var(--text);background:rgba(99,102,241,.1)}
-.tab.active{color:#fff;background:var(--accent);border-color:var(--accent)}
-.tab.recommend{position:relative;animation:pulse 2s infinite}
-.tab.recommend.active{background:var(--green);border-color:var(--green);animation:none}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
-.content{padding:24px 32px;max-width:1400px;margin:0 auto;display:none}
-.content.active{display:block}
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-.stat-card .label{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.5px}
-.stat-card .value{font-size:1.8rem;font-weight:700;margin-top:4px}
-.stat-card .change{font-size:.8rem;margin-top:4px}
-.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
-@media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
-.chart-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-.chart-box h3{font-size:1rem;margin-bottom:16px;color:var(--text)}
-.market-list{display:grid;gap:12px}
-.market-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;transition:border-color .2s}
-.market-card:hover{border-color:var(--accent)}
-.market-card .info{flex:1;min-width:200px}
-.market-card .title{font-weight:600;font-size:.95rem}
-.market-card .cat{color:var(--muted);font-size:.8rem;margin-top:2px}
-.market-card .metrics{display:flex;gap:16px;align-items:center}
-.market-card .odds{font-size:1.3rem;font-weight:700}
-.market-card .vol{color:var(--muted);font-size:.85rem}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
-.badge.buy{background:rgba(34,197,94,.15);color:var(--green)}
-.badge.sell{background:rgba(239,68,68,.15);color:var(--red)}
-.badge.strong{background:rgba(34,197,94,.15);color:var(--green)}
-.badge.moderate{background:rgba(234,179,8,.15);color:var(--yellow)}
-.badge.weak{background:rgba(239,68,68,.15);color:var(--red)}
-.badge.politics{background:rgba(99,102,241,.15);color:var(--accent)}
-.badge.sports{background:rgba(6,182,212,.15);color:var(--cyan)}
-.badge.crypto{background:rgba(249,115,22,.15);color:var(--orange)}
-.badge.finance{background:rgba(234,179,8,.15);color:var(--yellow)}
-.badge.culture{background:rgba(168,85,247,.15);color:#a855f7}
-.badge.ai{background:rgba(99,102,241,.15);color:var(--accent)}
-.rec-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
-.rec-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-.rec-title{font-size:1.05rem;font-weight:700}
-.rec-details{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:12px 0}
-.rec-detail{background:rgba(255,255,255,.03);padding:10px 12px;border-radius:8px}
-.rec-detail .lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.rec-detail .val{font-size:1.1rem;font-weight:600;margin-top:2px}
-.confidence-bar{height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-top:8px}
-.confidence-fill{height:100%;border-radius:3px;transition:width .3s}
-.risk-dots{display:flex;gap:4px}
-.risk-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15)}
-.risk-dot.active{background:var(--red)}
-.thesis{color:var(--muted);font-size:.88rem;margin-top:12px;line-height:1.5;padding:12px;background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid var(--accent)}
-.portfolio-header{background:linear-gradient(135deg,#1e1b4b,#0f172a);border:1px solid var(--accent);border-radius:12px;padding:24px;margin-bottom:24px}
-.portfolio-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:20px}
-.portfolio-stats .item .lbl{color:var(--muted);font-size:.8rem}
-.portfolio-stats .item .val{font-size:1.5rem;font-weight:700}
-.positions-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:.9rem}
-.positions-table th{text-align:left;padding:10px 14px;border-bottom:2px solid var(--border);color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
-.positions-table td{padding:10px 14px;border-bottom:1px solid var(--border)}
-.positions-table tr:hover{background:rgba(99,102,241,.05)}
-.pl-positive{color:var(--green)}
-.pl-negative{color:var(--red)}
-.avoid-card{background:var(--card);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:16px 20px;margin-bottom:12px}
-.avoid-card .title{font-weight:600;color:var(--red);margin-bottom:4px}
-.avoid-card .reason{color:var(--muted);font-size:.88rem}
-.checklist{margin-top:20px}
-.check-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
-.check-item input{accent-color:var(--green);width:18px;height:18px}
-.check-item.checked .check-label{text-decoration:line-through;color:var(--muted)}
-.filter-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.filter-btn{padding:6px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:.82rem;transition:all .2s}
-.filter-btn:hover,.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-th{text-align:left;padding:12px 16px;border-bottom:2px solid var(--border);color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;cursor:pointer}
-th:hover{color:var(--text)}
-td{padding:12px 16px;border-bottom:1px solid var(--border)}
-tr:hover{background:rgba(99,102,241,.05)}
-.disclaimer{text-align:center;padding:32px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:40px}
-.section-title{font-size:1.2rem;font-weight:700;margin:28px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.strategy-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
-.strategy-block h4{color:var(--accent);margin-bottom:8px}
-.strategy-block p,.strategy-block li{color:var(--muted);font-size:.9rem}
-.strategy-block ul{margin-left:20px;margin-top:8px}
-.strategy-block li{margin-bottom:6px}
-.ev-calc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-.ev-calc input{background:#0a0e17;border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;width:100%;margin:4px 0 12px;font-size:.9rem}
-.ev-calc label{color:var(--muted);font-size:.85rem}
-.ev-result{font-size:1.2rem;font-weight:700;margin-top:12px;color:var(--accent)}
-.pie-container{max-width:350px;margin:0 auto}
-.divider{height:1px;background:var(--border);margin:28px 0}
+  :root {
+    --bg: #0a0e17;
+    --card: #111827;
+    --border: #1e2a4a;
+    --text: #e1e5ee;
+    --muted: #8892a4;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --green: #10b981;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --orange: #f97316;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5; }
+
+  /* HEADER */
+  .header { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .header-left h1 span { color: var(--accent2); }
+  .header-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .live-dot { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+  .disclaimer { font-size: 11px; color: var(--muted); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); padding: 4px 10px; border-radius: 6px; }
+
+  /* TABS */
+  .tabs { display: flex; background: #0d1220; border-bottom: 1px solid var(--border); padding: 0 24px; overflow-x: auto; }
+  .tab { padding: 14px 20px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: #fff; border-bottom-color: var(--accent); }
+  .tab.rec-tab { color: var(--green); border-bottom-color: var(--green); animation: tab-pulse 3s infinite; }
+  .tab.rec-tab.active { color: #fff; background: rgba(16,185,129,0.1); }
+  @keyframes tab-pulse { 0%,100%{box-shadow:none;} 50%{box-shadow:0 0 12px rgba(16,185,129,0.4);} }
+
+  /* CONTENT */
+  .content { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .content.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 700; color: #fff; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .stat-green { color: var(--green) !important; }
+  .stat-red { color: var(--red) !important; }
+
+  /* PORTFOLIO TABLE */
+  .portfolio-section { margin-bottom: 28px; }
+  .portfolio-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .portfolio-table th { text-align: left; padding: 10px 12px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+  .portfolio-table td { padding: 12px; border-bottom: 1px solid rgba(30,42,74,0.5); font-size: 13px; vertical-align: middle; }
+  .portfolio-table tr:last-child td { border-bottom: none; }
+  .portfolio-table tr:hover td { background: rgba(99,102,241,0.05); }
+  .market-name { font-weight: 600; color: var(--text); }
+  .market-tag { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .price-pill { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .pill-up { background: rgba(16,185,129,0.15); color: var(--green); }
+  .pill-down { background: rgba(239,68,68,0.15); color: var(--red); }
+  .pill-neutral { background: rgba(99,102,241,0.15); color: var(--accent2); }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } .grid-3 { grid-template-columns: 1fr; } }
+
+  /* RECOMMENDATIONS */
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .section-title { font-size: 17px; font-weight: 700; color: #fff; }
+  .section-sub { font-size: 12px; color: var(--muted); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .badge-buy { background: rgba(16,185,129,0.2); color: var(--green); border: 1px solid rgba(16,185,129,0.4); }
+  .badge-sell { background: rgba(239,68,68,0.2); color: var(--red); border: 1px solid rgba(239,68,68,0.4); }
+  .badge-cat { background: rgba(99,102,241,0.15); color: var(--accent2); border: 1px solid rgba(99,102,241,0.3); font-size: 10px; padding: 2px 8px; }
+
+  .rec-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .rec-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; transition: border-color 0.2s, transform 0.2s; }
+  .rec-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .rec-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .rec-title { font-size: 14px; font-weight: 700; color: #fff; margin: 6px 0 4px; }
+  .rec-price-row { display: flex; gap: 20px; margin-bottom: 12px; }
+  .rec-price-item { }
+  .rec-price-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .rec-price-val { font-size: 18px; font-weight: 700; color: #fff; }
+  .rec-price-sub { font-size: 11px; color: var(--muted); }
+
+  .conf-bar { height: 4px; background: var(--border); border-radius: 2px; margin: 8px 0 4px; }
+  .conf-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+  .conf-high { background: var(--green); }
+  .conf-mid { background: var(--yellow); }
+  .conf-low { background: var(--red); }
+
+  .risk-dots { display: flex; gap: 4px; }
+  .risk-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .risk-dot.active-r1 { background: var(--green); }
+  .risk-dot.active-r2 { background: var(--yellow); }
+  .risk-dot.active-r3 { background: var(--red); }
+  .risk-dot.inactive { background: var(--border); }
+
+  .thesis { font-size: 12px; color: var(--muted); line-height: 1.6; margin: 10px 0; border-left: 2px solid var(--accent); padding-left: 10px; }
+  .outcome-row { display: flex; gap: 12px; margin-top: 10px; }
+  .outcome-box { flex: 1; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px 10px; text-align: center; }
+  .outcome-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+  .outcome-val { font-size: 13px; font-weight: 700; margin-top: 2px; }
+  .outcome-win { color: var(--green); }
+  .outcome-lose { color: var(--red); }
+  .outcome-ev { color: var(--accent2); }
+  .resolve-date { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+  /* CHECKLIST */
+  .checklist { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+  .checklist h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 14px; }
+  .check-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 8px; margin-bottom: 6px; cursor: pointer; transition: background 0.15s; }
+  .check-item:hover { background: rgba(99,102,241,0.07); }
+  .check-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--green); }
+  .check-item.done { opacity: 0.5; text-decoration: line-through; }
+  .check-text { flex: 1; font-size: 13px; }
+  .check-alloc { font-size: 12px; color: var(--accent2); font-weight: 600; }
+
+  /* AVOID */
+  .avoid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .avoid-card { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 14px; }
+  .avoid-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+  .avoid-reason { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .avoid-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; background: rgba(239,68,68,0.15); color: var(--red); margin-bottom: 8px; }
+
+  /* OVERVIEW */
+  .chart-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .chart-box canvas { max-height: 280px; }
+  .trending-list { }
+  .trend-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(30,42,74,0.5); }
+  .trend-item:last-child { border-bottom: none; }
+  .trend-name { font-size: 13px; color: var(--text); font-weight: 500; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .trend-cat { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .trend-price { font-size: 13px; font-weight: 700; }
+
+  /* OPPORTUNITIES */
+  .opp-filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .filter-btn { padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px; background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .filter-btn:hover, .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .opp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .opp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  .opp-card.hidden { display: none; }
+  .opp-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .opp-title { font-size: 13px; font-weight: 600; color: #fff; }
+  .opp-price { font-size: 16px; font-weight: 700; color: var(--accent2); }
+  .opp-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .signal-bar { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .signal-label { font-size: 10px; color: var(--muted); width: 50px; }
+  .signal-track { flex: 1; height: 3px; background: var(--border); border-radius: 2px; }
+  .signal-fill { height: 100%; border-radius: 2px; background: var(--accent); }
+
+  /* ALL MARKETS TABLE */
+  .table-controls { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .search-input { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 8px; font-size: 13px; width: 240px; outline: none; }
+  .search-input:focus { border-color: var(--accent); }
+  .sort-select { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; outline: none; }
+  .markets-table { width: 100%; border-collapse: collapse; }
+  .markets-table th { text-align: left; padding: 10px 12px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); cursor: pointer; white-space: nowrap; }
+  .markets-table th:hover { color: var(--text); }
+  .markets-table td { padding: 11px 12px; border-bottom: 1px solid rgba(30,42,74,0.4); font-size: 13px; }
+  .markets-table tr:hover td { background: rgba(99,102,241,0.04); }
+  .markets-table .hidden-row { display: none; }
+  .cat-pill { padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+  .cat-politics { background: rgba(99,102,241,0.15); color: var(--accent2); }
+  .cat-sports { background: rgba(16,185,129,0.15); color: var(--green); }
+  .cat-crypto { background: rgba(249,115,22,0.15); color: var(--orange); }
+  .cat-finance { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .cat-culture { background: rgba(139,92,246,0.15); color: var(--purple); }
+  .cat-geo { background: rgba(245,158,11,0.15); color: var(--yellow); }
+
+  /* EV CALCULATOR */
+  .ev-calc { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px; }
+  .calc-field label { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .calc-field input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 15px; outline: none; }
+  .calc-field input:focus { border-color: var(--accent); }
+  .calc-result { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(16,185,129,0.1)); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .calc-ev-val { font-size: 28px; font-weight: 800; }
+  .calc-ev-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .guide-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .guide-section h3 { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+  .guide-section p { font-size: 13px; color: var(--muted); margin-bottom: 8px; line-height: 1.6; }
+  .guide-section ul { padding-left: 18px; }
+  .guide-section li { font-size: 13px; color: var(--muted); margin-bottom: 6px; line-height: 1.6; }
+  .guide-section li strong { color: var(--text); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div>
-    <h1>Polymarket Scout Dashboard</h1>
-    <div class="meta">Last updated: <span>April 3, 2026 â Live API Refresh</span></div>
+  <div class="header-left">
+    <h1>üìä Polymarket <span>Scout</span></h1>
+    <div class="header-meta"><span class="live-dot"></span>Live Data ‚Äî Last updated: Mon Apr 6, 2026 ¬∑ Auto-refresh via scheduled task</div>
   </div>
-  <div class="meta">Data: gamma-api + CLOB | Markets tracked: 50+</div>
+  <div class="disclaimer">‚ö†Ô∏è Not financial advice. All trades carry risk.</div>
 </div>
 
 <div class="tabs">
-  <div class="tab recommend active" onclick="switchTab('recommendations')">Recommendations</div>
-  <div class="tab" onclick="switchTab('overview')">Overview</div>
-  <div class="tab" onclick="switchTab('opportunities')">Opportunities</div>
-  <div class="tab" onclick="switchTab('markets')">All Markets</div>
-  <div class="tab" onclick="switchTab('strategy')">Strategy Guide</div>
+  <div class="tab rec-tab active" onclick="showTab('rec')">üéØ Recommendations</div>
+  <div class="tab" onclick="showTab('overview')">üìà Overview</div>
+  <div class="tab" onclick="showTab('opportunities')">üí° Opportunities</div>
+  <div class="tab" onclick="showTab('markets')">üìã All Markets</div>
+  <div class="tab" onclick="showTab('strategy')">üìö Strategy Guide</div>
 </div>
 
-<!-- TAB 1: RECOMMENDATIONS -->
-<div class="content active" id="recommendations">
+<!-- ===== TAB 1: RECOMMENDATIONS ===== -->
+<div id="tab-rec" class="content active">
 
-  <!-- PORTFOLIO TRACKER -->
-  <div class="portfolio-header">
-    <h2 style="font-size:1.1rem;margin-bottom:16px;color:var(--cyan)">Your Portfolio â Live Tracker</h2>
-    <div class="portfolio-stats">
-      <div class="item"><div class="lbl">Portfolio Value</div><div class="val">$78.59</div></div>
-      <div class="item"><div class="lbl">Available to Trade</div><div class="val" style="color:var(--cyan)">$28.22</div></div>
-      <div class="item"><div class="lbl">Invested</div><div class="val">$51.32</div></div>
-      <div class="item"><div class="lbl">Positions Value</div><div class="val">$50.37</div></div>
-      <div class="item"><div class="lbl">Total P/L</div><div class="val pl-negative">-$0.95 (-1.85%)</div></div>
-      <div class="item"><div class="lbl">If All Win</div><div class="val pl-positive">$61.43</div></div>
+  <!-- Portfolio Tracker -->
+  <div class="portfolio-section">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Portfolio</div>
+        <div class="stat-value">$84.47</div>
+        <div class="stat-sub">Positions + Cash</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Available to Trade</div>
+        <div class="stat-value" style="color:var(--accent2)">$28.22</div>
+        <div class="stat-sub">Undeployed capital</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total P/L</div>
+        <div class="stat-value stat-green">+$4.93</div>
+        <div class="stat-sub stat-green">+9.6% on invested capital</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Positions Value</div>
+        <div class="stat-value">$56.25</div>
+        <div class="stat-sub">4 open positions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Deposited</div>
+        <div class="stat-value" style="color:var(--muted)">$80.00</div>
+        <div class="stat-sub stat-green">+5.6% overall</div>
+      </div>
     </div>
-    <table class="positions-table">
-      <thead>
-        <tr><th>Position</th><th>Shares</th><th>Avg Price</th><th>Current</th><th>Value</th><th>P/L</th><th>To Win</th><th>Resolves</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="badge ai">AI</span> Claude Opus 4.6 Top AI YES</td>
-          <td>9.4</td><td>88.5Â¢</td><td>94.0Â¢</td>
-          <td>$8.84</td><td class="pl-positive">+$0.52 (+6.2%)</td><td>$9.41</td>
-          <td><span style="color:var(--cyan)">Apr 30, 2026</span> <span style="font-size:.75rem;color:var(--muted)">(27 days)</span></td>
-        </tr>
-        <tr>
-          <td><span class="badge sports">Sports</span> Arsenal EPL YES</td>
-          <td>16.9</td><td>89.0Â¢</td><td>89.0Â¢</td>
-          <td>$15.04</td><td class="pl-positive">+$0.04 (+0.3%)</td><td>$16.85</td>
-          <td><span style="color:var(--cyan)">May 27, 2026</span> <span style="font-size:.75rem;color:var(--muted)">(54 days)</span></td>
-        </tr>
-        <tr>
-          <td><span class="badge sports">Sports</span> Barcelona La Liga YES</td>
-          <td>21.1</td><td>76.0Â¢</td><td>75.5Â¢</td>
-          <td>$15.93</td><td class="pl-negative">-$0.07 (-0.4%)</td><td>$21.05</td>
-          <td><span style="color:var(--cyan)">May 30, 2026</span> <span style="font-size:.75rem;color:var(--muted)">(57 days)</span></td>
-        </tr>
-        <tr>
-          <td><span class="badge sports">Sports</span> SGA NBA MVP YES</td>
-          <td>14.1</td><td>85.0Â¢</td><td>86.0Â¢</td>
-          <td>$12.13</td><td class="pl-positive">+$0.13 (+1.1%)</td><td>$14.12</td>
-          <td><span style="color:var(--cyan)">~Jun 2026</span> <span style="font-size:.75rem;color:var(--muted)">(~60 days)</span></td>
-        </tr>
-      </tbody>
-    </table>
-    <div style="margin-top:12px;font-size:.8rem;color:var(--muted)">Prices updated via Polymarket API. Positions are marked to market.</div>
+
+    <div class="card">
+      <div class="card-title">Open Positions ‚Äî Current Prices as of Apr 6, 2026</div>
+      <table class="portfolio-table">
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>Shares</th>
+            <th>Avg Price</th>
+            <th>Current Price</th>
+            <th>Current Value</th>
+            <th>P/L ($)</th>
+            <th>P/L (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="market-name">Barcelona La Liga 2025-26 YES</div>
+              <div class="market-tag">‚öΩ Sports ¬∑ Resolves May 2026</div>
+            </td>
+            <td>21.1</td>
+            <td>76.0¬¢</td>
+            <td><span class="price-pill pill-up">93.5¬¢</span></td>
+            <td><strong>$19.73</strong></td>
+            <td class="stat-green">+$3.73</td>
+            <td><span class="price-pill pill-up">+23.3%</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="market-name">Arsenal EPL Winner YES</div>
+              <div class="market-tag">‚öΩ Sports ¬∑ Resolves May 2026</div>
+            </td>
+            <td>16.9</td>
+            <td>89.0¬¢</td>
+            <td><span class="price-pill pill-down">86.5¬¢</span></td>
+            <td><strong>$14.62</strong></td>
+            <td class="stat-red">-$0.38</td>
+            <td><span class="price-pill pill-down">-2.5%</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="market-name">SGA NBA MVP 2025-26 YES</div>
+              <div class="market-tag">üèÄ Sports ¬∑ Resolves Jun 2026</div>
+            </td>
+            <td>14.1</td>
+            <td>85.0¬¢</td>
+            <td><span class="price-pill pill-up">94.0¬¢</span></td>
+            <td><strong>$13.25</strong></td>
+            <td class="stat-green">+$1.25</td>
+            <td><span class="price-pill pill-up">+10.4%</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="market-name">Claude Opus 4.6 Top AI Model YES</div>
+              <div class="market-tag">ü§ñ Tech/AI ¬∑ Resolves Apr 2026</div>
+            </td>
+            <td>9.4</td>
+            <td>88.5¬¢</td>
+            <td><span class="price-pill pill-up">92.0¬¢</span></td>
+            <td><strong>$8.65</strong></td>
+            <td class="stat-green">+$0.33</td>
+            <td><span class="price-pill pill-up">+4.0%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- NEW RECOMMENDATIONS FOR $28 BALANCE -->
-  <h2 class="section-title" style="color:var(--green)">New Recommendations â $28 Available</h2>
-
-  <div class="portfolio-stats" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px">
-    <div class="item"><div class="lbl">Deploy Amount</div><div class="val" style="color:var(--cyan)">$28</div></div>
-    <div class="item"><div class="lbl">Expected Return</div><div class="val" style="color:var(--green)">$30â$42</div></div>
-    <div class="item"><div class="lbl">New Positions</div><div class="val">5</div></div>
-    <div class="item"><div class="lbl">Focus</div><div class="val" style="color:var(--yellow)">Diversify</div></div>
+  <!-- New Recommendations -->
+  <div class="section-header">
+    <div>
+      <div class="section-title">New Recommendations ‚Äî $28 Budget</div>
+      <div class="section-sub">Diversified across Finance, AI, Sports, Politics, Culture ¬∑ Sized to available balance</div>
+    </div>
+    <div style="font-size:12px;color:var(--muted)">6 picks ¬∑ Apr 6, 2026</div>
   </div>
 
-  <div class="chart-grid">
+  <!-- Allocation Chart + Stats -->
+  <div class="grid-2" style="margin-bottom:24px;">
     <div class="chart-box">
-      <h3>New Allocation ($28)</h3>
-      <div class="pie-container"><canvas id="allocChart"></canvas></div>
+      <div class="card-title">Allocation Breakdown ‚Äî $28 Budget</div>
+      <canvas id="allocChart"></canvas>
     </div>
-    <div class="chart-box">
-      <h3>Risk/Reward Overview</h3>
-      <canvas id="rrChart"></canvas>
+    <div class="card" style="display:flex;flex-direction:column;justify-content:center;gap:14px;">
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Risk 1 (High Confidence ~45%)</div>
+        <div style="font-size:15px;font-weight:700;color:var(--green);">$12 ¬∑ F1 Mercedes + Inter Serie A</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Risk 2 (Medium Confidence ~32%)</div>
+        <div style="font-size:15px;font-weight:700;color:var(--yellow);">$9 ¬∑ Anthropic AI + VA-05 Politics</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Risk 3 (Speculative ~21%)</div>
+        <div style="font-size:15px;font-weight:700;color:var(--red);">$7 ¬∑ Spain World Cup + Alien Disclosure</div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:12px;">
+        <div style="font-size:11px;color:var(--muted)">Categories: Finance ¬∑ AI/Tech ¬∑ Sports ¬∑ Politics ¬∑ Culture</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Deliberately avoiding sports (already overweight)</div>
+      </div>
     </div>
   </div>
 
-  <!-- REC 1 -->
-  <div class="rec-card">
-    <div class="rec-header">
-      <div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">Anthropic Best AI Model End of April</span></div>
-      <span class="badge ai">AI / Tech</span>
+  <!-- Rec Cards -->
+  <div class="rec-cards">
+
+    <!-- 1: F1 Mercedes -->
+    <div class="rec-card">
+      <div class="rec-card-header">
+        <div>
+          <span class="badge badge-buy">BUY</span>
+          <span class="badge badge-cat" style="margin-left:6px;">üèé Sports/F1</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);">Risk</span>
+          <div class="risk-dots">
+            <div class="risk-dot active-r1"></div>
+            <div class="risk-dot inactive"></div>
+            <div class="risk-dot inactive"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rec-title">F1 Constructors Champion: Mercedes YES</div>
+      <div class="rec-price-row">
+        <div class="rec-price-item">
+          <div class="rec-price-label">Current Price</div>
+          <div class="rec-price-val">76.5¬¢</div>
+          <div class="rec-price-sub">YES side</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Allocation</div>
+          <div class="rec-price-val" style="color:var(--accent2)">$7.00</div>
+          <div class="rec-price-sub">~25% of budget</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Confidence</div>
+          <div class="rec-price-val" style="color:var(--green)">85%</div>
+          <div class="rec-price-sub">High</div>
+        </div>
+      </div>
+      <div class="conf-bar"><div class="conf-fill conf-high" style="width:85%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Confidence: 85% ¬∑ Resolves Dec 2026</div>
+      <div class="thesis">Mercedes has built a commanding lead in the 2026 F1 Constructors Championship in the early season. At 76.5¬¢, the market is pricing in ~23.5% failure risk ‚Äî likely too pessimistic given Mercedes' points cushion and car pace advantage. Strong ROI potential for a 6-month hold.</div>
+      <div class="outcome-row">
+        <div class="outcome-box"><div class="outcome-label">If Win</div><div class="outcome-val outcome-win">+$2.15</div></div>
+        <div class="outcome-box"><div class="outcome-label">If Lose</div><div class="outcome-val outcome-lose">-$7.00</div></div>
+        <div class="outcome-box"><div class="outcome-label">Exp. Value</div><div class="outcome-val outcome-ev">+$0.87</div></div>
+      </div>
     </div>
-    <div class="rec-details">
-      <div class="rec-detail"><div class="lbl">Price</div><div class="val">$0.94</div></div>
-      <div class="rec-detail"><div class="lbl">Allocation</div><div class="val" style="color:var(--green)">$8</div></div>
-      <div class="rec-detail"><div class="lbl">If Win</div><div class="val" style="color:var(--green)">$8.51</div></div>
-      <div class="rec-detail"><div class="lbl">If Lose</div><div class="val" style="color:var(--red)">$0</div></div>
-      <div class="rec-detail"><div class="lbl">EV</div><div class="val">+$0.02</div></div>
-      <div class="rec-detail"><div class="lbl">Resolves</div><div class="val">Apr 30</div></div>
+
+    <!-- 2: Anthropic AI June -->
+    <div class="rec-card">
+      <div class="rec-card-header">
+        <div>
+          <span class="badge badge-buy">BUY</span>
+          <span class="badge badge-cat" style="margin-left:6px;">ü§ñ AI/Tech</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);">Risk</span>
+          <div class="risk-dots">
+            <div class="risk-dot active-r2"></div>
+            <div class="risk-dot active-r2"></div>
+            <div class="risk-dot inactive"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rec-title">Anthropic Best AI Model ‚Äî End of June YES</div>
+      <div class="rec-price-row">
+        <div class="rec-price-item">
+          <div class="rec-price-label">Current Price</div>
+          <div class="rec-price-val">66.0¬¢</div>
+          <div class="rec-price-sub">YES side</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Allocation</div>
+          <div class="rec-price-val" style="color:var(--accent2)">$6.00</div>
+          <div class="rec-price-sub">~21% of budget</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Confidence</div>
+          <div class="rec-price-val" style="color:var(--yellow)">75%</div>
+          <div class="rec-price-sub">Medium</div>
+        </div>
+      </div>
+      <div class="conf-bar"><div class="conf-fill conf-mid" style="width:75%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Confidence: 75% ¬∑ Resolves Jun 30, 2026</div>
+      <div class="thesis">The April market prices Anthropic at 92¬¢, yet the June market is only 66¬¢ ‚Äî a 26¬¢ gap suggesting high uncertainty about sustained dominance. Claude Opus 4.6 benchmarks show commanding leads in reasoning and coding. Google Gemini is the primary threat but remains behind on key evals. Good risk/reward at 66¬¢.</div>
+      <div class="outcome-row">
+        <div class="outcome-box"><div class="outcome-label">If Win</div><div class="outcome-val outcome-win">+$3.09</div></div>
+        <div class="outcome-box"><div class="outcome-label">If Lose</div><div class="outcome-val outcome-lose">-$6.00</div></div>
+        <div class="outcome-box"><div class="outcome-label">Exp. Value</div><div class="outcome-val outcome-ev">+$0.75</div></div>
+      </div>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div>Confidence: 95%<div class="confidence-bar" style="width:200px"><div class="confidence-fill" style="width:95%;background:var(--green)"></div></div></div>
-      <div>Risk: <span class="risk-dots"><span class="risk-dot active"></span><span class="risk-dot"></span><span class="risk-dot"></span></span></div>
+
+    <!-- 3: Inter Serie A -->
+    <div class="rec-card">
+      <div class="rec-card-header">
+        <div>
+          <span class="badge badge-buy">BUY</span>
+          <span class="badge badge-cat" style="margin-left:6px;">‚öΩ Sports</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);">Risk</span>
+          <div class="risk-dots">
+            <div class="risk-dot active-r1"></div>
+            <div class="risk-dot inactive"></div>
+            <div class="risk-dot inactive"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rec-title">Inter Milan Serie A Winner YES</div>
+      <div class="rec-price-row">
+        <div class="rec-price-item">
+          <div class="rec-price-label">Current Price</div>
+          <div class="rec-price-val">83.0¬¢</div>
+          <div class="rec-price-sub">YES side</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Allocation</div>
+          <div class="rec-price-val" style="color:var(--accent2)">$5.00</div>
+          <div class="rec-price-sub">~18% of budget</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Confidence</div>
+          <div class="rec-price-val" style="color:var(--green)">86%</div>
+          <div class="rec-price-sub">High</div>
+        </div>
+      </div>
+      <div class="conf-bar"><div class="conf-fill conf-high" style="width:86%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Confidence: 86% ¬∑ Resolves May 2026</div>
+      <div class="thesis">Inter leads Serie A with a substantial points gap heading into the final stretch of the season. At 83¬¢, the market still prices in 17% failure risk ‚Äî likely too high given their form and schedule. Resolves within ~7 weeks, providing fast capital turnover. Note: user already has EPL and La Liga exposure; this adds Italian football diversification.</div>
+      <div class="outcome-row">
+        <div class="outcome-box"><div class="outcome-label">If Win</div><div class="outcome-val outcome-win">+$1.02</div></div>
+        <div class="outcome-box"><div class="outcome-label">If Lose</div><div class="outcome-val outcome-lose">-$5.00</div></div>
+        <div class="outcome-box"><div class="outcome-label">Exp. Value</div><div class="outcome-val outcome-ev">+$0.18</div></div>
+      </div>
     </div>
-    <div class="thesis">Claude Opus 4.6 dominates the LMSYS Chatbot Arena leaderboard and you already hold the March version of this bet. The April market at 94% with $3.4M volume is a near-lock that resolves in just 27 days â stack more on your conviction.</div>
+
+    <!-- 4: VA-05 Politics -->
+    <div class="rec-card">
+      <div class="rec-card-header">
+        <div>
+          <span class="badge badge-buy">BUY</span>
+          <span class="badge badge-cat" style="margin-left:6px;">üó≥ Politics</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);">Risk</span>
+          <div class="risk-dots">
+            <div class="risk-dot active-r2"></div>
+            <div class="risk-dot active-r2"></div>
+            <div class="risk-dot inactive"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rec-title">VA-05 House Seat: Democrat Wins YES</div>
+      <div class="rec-price-row">
+        <div class="rec-price-item">
+          <div class="rec-price-label">Current Price</div>
+          <div class="rec-price-val">78.5¬¢</div>
+          <div class="rec-price-sub">YES side</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Allocation</div>
+          <div class="rec-price-val" style="color:var(--accent2)">$3.00</div>
+          <div class="rec-price-sub">~11% of budget</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Confidence</div>
+          <div class="rec-price-val" style="color:var(--yellow)">78%</div>
+          <div class="rec-price-sub">Medium</div>
+        </div>
+      </div>
+      <div class="conf-bar"><div class="conf-fill conf-mid" style="width:78%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Confidence: 78% ¬∑ Resolves Nov 2026</div>
+      <div class="thesis">Virginia's 5th district has trended Democratic in recent cycles, with a candidate leading in polls and fundraising. Provides good portfolio diversification into politics at reasonable odds of 78.5¬¢. Anti-Trump sentiment boosting Dem turnout in suburban Virginia counties makes this a solid medium-confidence pick.</div>
+      <div class="outcome-row">
+        <div class="outcome-box"><div class="outcome-label">If Win</div><div class="outcome-val outcome-win">+$0.82</div></div>
+        <div class="outcome-box"><div class="outcome-label">If Lose</div><div class="outcome-val outcome-lose">-$3.00</div></div>
+        <div class="outcome-box"><div class="outcome-label">Exp. Value</div><div class="outcome-val outcome-ev">+$0.22</div></div>
+      </div>
+    </div>
+
+    <!-- 5: Spain World Cup -->
+    <div class="rec-card">
+      <div class="rec-card-header">
+        <div>
+          <span class="badge badge-buy">BUY</span>
+          <span class="badge badge-cat" style="margin-left:6px;">‚öΩ World Cup</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);">Risk</span>
+          <div class="risk-dots">
+            <div class="risk-dot active-r3"></div>
+            <div class="risk-dot active-r3"></div>
+            <div class="risk-dot active-r3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rec-title">Spain 2026 FIFA World Cup Winner YES</div>
+      <div class="rec-price-row">
+        <div class="rec-price-item">
+          <div class="rec-price-label">Current Price</div>
+          <div class="rec-price-val">16.0¬¢</div>
+          <div class="rec-price-sub">YES side</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Allocation</div>
+          <div class="rec-price-val" style="color:var(--accent2)">$4.00</div>
+          <div class="rec-price-sub">~14% of budget</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Confidence</div>
+          <div class="rec-price-val" style="color:var(--red)">22%</div>
+          <div class="rec-price-sub">Speculative</div>
+        </div>
+      </div>
+      <div class="conf-bar"><div class="conf-fill conf-low" style="width:22%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Confidence: 22% ¬∑ Resolves Jul 2026</div>
+      <div class="thesis">Spain is the defending World Cup champion (2022) and current Euros holder. As the leading team at 16¬¢, a $4 bet wins $25 if Spain lifts the trophy. The 6.25x payout justifies the high risk. Spain's squad is arguably the best in the tournament heading to North America in summer 2026.</div>
+      <div class="outcome-row">
+        <div class="outcome-box"><div class="outcome-label">If Win</div><div class="outcome-val outcome-win">+$21.00</div></div>
+        <div class="outcome-box"><div class="outcome-label">If Lose</div><div class="outcome-val outcome-lose">-$4.00</div></div>
+        <div class="outcome-box"><div class="outcome-label">Exp. Value</div><div class="outcome-val outcome-ev">+$0.84</div></div>
+      </div>
+    </div>
+
+    <!-- 6: Alien Disclosure -->
+    <div class="rec-card">
+      <div class="rec-card-header">
+        <div>
+          <span class="badge badge-buy">BUY</span>
+          <span class="badge badge-cat" style="margin-left:6px;">üõ∏ Culture</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);">Risk</span>
+          <div class="risk-dots">
+            <div class="risk-dot active-r3"></div>
+            <div class="risk-dot active-r3"></div>
+            <div class="risk-dot active-r3"></div>
+          </div>
+        </div>
+      </div>
+      <div class="rec-title">US Confirms Alien Existence by Dec 31 2026 YES</div>
+      <div class="rec-price-row">
+        <div class="rec-price-item">
+          <div class="rec-price-label">Current Price</div>
+          <div class="rec-price-val">17.5¬¢</div>
+          <div class="rec-price-sub">YES side</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Allocation</div>
+          <div class="rec-price-val" style="color:var(--accent2)">$3.00</div>
+          <div class="rec-price-sub">~11% of budget</div>
+        </div>
+        <div class="rec-price-item">
+          <div class="rec-price-label">Confidence</div>
+          <div class="rec-price-val" style="color:var(--red)">22%</div>
+          <div class="rec-price-sub">Speculative</div>
+        </div>
+      </div>
+      <div class="conf-bar"><div class="conf-fill conf-low" style="width:22%"></div></div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">Confidence: 22% ¬∑ Resolves Dec 31, 2026</div>
+      <div class="thesis">Congressional UAP hearings, whistleblower protections, and multiple government disclosures in 2025-26 have meaningfully raised disclosure probability. At 17.5¬¢, the 5.7x payout makes this a reasonable speculative allocation. Volume of $23.9M suggests serious market attention. Diversifies into Culture/Geopolitics category.</div>
+      <div class="outcome-row">
+        <div class="outcome-box"><div class="outcome-label">If Win</div><div class="outcome-val outcome-win">+$14.14</div></div>
+        <div class="outcome-box"><div class="outcome-label">If Lose</div><div class="outcome-val outcome-lose">-$3.00</div></div>
+        <div class="outcome-box"><div class="outcome-label">Exp. Value</div><div class="outcome-val outcome-ev">+$0.27</div></div>
+      </div>
+    </div>
+
+  </div><!-- /rec-cards -->
+
+  <!-- Execution Checklist -->
+  <div class="checklist">
+    <h3>‚ö° Execution Checklist ‚Äî Click to track progress</h3>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox">
+      <div class="check-text">BUY F1 Constructors: Mercedes YES @ 76.5¬¢</div>
+      <div class="check-alloc">$7.00</div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox">
+      <div class="check-text">BUY Anthropic Best AI Model End of June YES @ 66¬¢</div>
+      <div class="check-alloc">$6.00</div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox">
+      <div class="check-text">BUY Inter Milan Serie A Winner YES @ 83¬¢</div>
+      <div class="check-alloc">$5.00</div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox">
+      <div class="check-text">BUY VA-05 House Seat Democrat YES @ 78.5¬¢</div>
+      <div class="check-alloc">$3.00</div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox">
+      <div class="check-text">BUY Spain 2026 FIFA World Cup YES @ 16¬¢</div>
+      <div class="check-alloc">$4.00</div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <input type="checkbox">
+      <div class="check-text">BUY US Alien Disclosure YES @ 17.5¬¢</div>
+      <div class="check-alloc">$3.00</div>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;">
+      <span>Total to deploy: <strong style="color:var(--accent2)">$28.00</strong></span>
+      <span>Remaining after: <strong style="color:var(--green)">~$0.22</strong></span>
+    </div>
   </div>
 
-  <!-- REC 2 -->
-  <div class="rec-card">
-    <div class="rec-header">
-      <div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">TISZA Wins Hungary Election</span></div>
-      <span class="badge politics">Politics / Elections</span>
+  <!-- Markets to Avoid -->
+  <div class="section-header">
+    <div class="section-title" style="color:var(--red)">üö´ Markets to Avoid</div>
+    <div class="section-sub">Tempting but poor risk/reward</div>
+  </div>
+  <div class="avoid-cards">
+    <div class="avoid-card">
+      <div class="avoid-badge">TIME HORIZON</div>
+      <div class="avoid-title">2028 Democratic Presidential Primary</div>
+      <div class="avoid-reason">$982M in volume but resolves in November 2028 ‚Äî over 2.5 years away. Your capital is locked up for years with massive uncertainty. Top candidates are all priced below 10¬¢ with extreme variance. No edge possible this far out.</div>
     </div>
-    <div class="rec-details">
-      <div class="rec-detail"><div class="lbl">Price</div><div class="val">$0.70</div></div>
-      <div class="rec-detail"><div class="lbl">Allocation</div><div class="val" style="color:var(--green)">$7</div></div>
-      <div class="rec-detail"><div class="lbl">If Win</div><div class="val" style="color:var(--green)">$10.00</div></div>
-      <div class="rec-detail"><div class="lbl">If Lose</div><div class="val" style="color:var(--red)">$0</div></div>
-      <div class="rec-detail"><div class="lbl">EV</div><div class="val">+$1.80</div></div>
-      <div class="rec-detail"><div class="lbl">Resolves</div><div class="val">Apr 2026</div></div>
+    <div class="avoid-card">
+      <div class="avoid-badge">TOO VOLATILE</div>
+      <div class="avoid-title">Bitcoin Price Targets (specific dates)</div>
+      <div class="avoid-reason">Short-term BTC price markets are heavily influenced by macro noise (tariffs, Fed signals). The April 6 markets are already resolving today. No sustainable edge on intraday crypto without market-making infrastructure.</div>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div>Confidence: 73%<div class="confidence-bar" style="width:200px"><div class="confidence-fill" style="width:73%;background:var(--yellow)"></div></div></div>
-      <div>Risk: <span class="risk-dots"><span class="risk-dot active"></span><span class="risk-dot active"></span><span class="risk-dot"></span></span></div>
+    <div class="avoid-card">
+      <div class="avoid-badge">NO EDGE</div>
+      <div class="avoid-title">Weather Prediction Markets</div>
+      <div class="avoid-reason">Temperature and precipitation markets require meteorological modeling to have any edge. Without access to NWS ensemble data, these are effectively coin flips. Volume is tiny ($10‚Äì$1K), making them illiquid and hard to exit.</div>
     </div>
-    <div class="thesis">PÃ©ter Magyar's TISZA party at 70% with $56M volume â the Hungarian election is imminent. This diversifies your portfolio away from sports into politics. At $0.70 the 43% return on a likely outcome is attractive for capital resolving within weeks.</div>
+    <div class="avoid-card">
+      <div class="avoid-badge">BLACK SWAN</div>
+      <div class="avoid-title">China Invades Taiwan by End of 2026 (9.85¬¢)</div>
+      <div class="avoid-reason">Extreme geopolitical binary event. Even at 9.85¬¢, this represents tail risk that could go to 0 quickly. Geopolitical markets are subject to sudden regime changes and information asymmetries. Not suitable for retail allocation.</div>
+    </div>
+    <div class="avoid-card">
+      <div class="avoid-badge">NOVELTY</div>
+      <div class="avoid-title">Elon Musk Tweet Count Markets</div>
+      <div class="avoid-reason">High volume ($99K+) but these are entertainment markets with no fundamental edge. Musk's posting behavior is erratic and impossible to model. The bid/ask spread erodes any theoretical edge. Pure noise trading.</div>
+    </div>
+    <div class="avoid-card">
+      <div class="avoid-badge">PRICED IN</div>
+      <div class="avoid-title">Bayern Bundesliga / PSG Ligue 1 (99¬¢ / 94¬¢)</div>
+      <div class="avoid-reason">Both at extreme prices with almost no upside. Bayern at 99¬¢ returns only 1¬¢ per dollar invested ‚Äî a 1% return for ~8 weeks of capital lock-up. Not worth the deployment cost vs. other opportunities above.</div>
+    </div>
   </div>
 
-  <!-- REC 3 -->
-  <div class="rec-card">
-    <div class="rec-header">
-      <div><span class="badge buy">BUY NO</span> <span class="rec-title" style="margin-left:8px">No US Recession by End 2026</span></div>
-      <span class="badge finance">Finance / Economy</span>
-    </div>
-    <div class="rec-details">
-      <div class="rec-detail"><div class="lbl">Price (NO)</div><div class="val">$0.72</div></div>
-      <div class="rec-detail"><div class="lbl">Allocation</div><div class="val" style="color:var(--green)">$6</div></div>
-      <div class="rec-detail"><div class="lbl">If Win</div><div class="val" style="color:var(--green)">$8.33</div></div>
-      <div class="rec-detail"><div class="lbl">If Lose</div><div class="val" style="color:var(--red)">$0</div></div>
-      <div class="rec-detail"><div class="lbl">EV</div><div class="val">+$1.33</div></div>
-      <div class="rec-detail"><div class="lbl">Resolves</div><div class="val">Dec 2026</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div>Confidence: 68%<div class="confidence-bar" style="width:200px"><div class="confidence-fill" style="width:68%;background:var(--yellow)"></div></div></div>
-      <div>Risk: <span class="risk-dots"><span class="risk-dot active"></span><span class="risk-dot active"></span><span class="risk-dot"></span></span></div>
-    </div>
-    <div class="thesis">Recession odds at 28% are inflated by tariff panic. Fundamentals remain solid: unemployment 4.6%, Sahm rule at 0.3%, GDP forecast 2.2%. Buying NO at $0.72 adds finance exposure to your sports-heavy portfolio.</div>
-  </div>
+</div><!-- /tab-rec -->
 
-  <!-- REC 4 -->
-  <div class="rec-card">
-    <div class="rec-header">
-      <div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">PÃ©ter Magyar Next PM of Hungary</span></div>
-      <span class="badge politics">Politics / Elections</span>
-    </div>
-    <div class="rec-details">
-      <div class="rec-detail"><div class="lbl">Price</div><div class="val">$0.665</div></div>
-      <div class="rec-detail"><div class="lbl">Allocation</div><div class="val" style="color:var(--green)">$4</div></div>
-      <div class="rec-detail"><div class="lbl">If Win</div><div class="val" style="color:var(--green)">$6.02</div></div>
-      <div class="rec-detail"><div class="lbl">If Lose</div><div class="val" style="color:var(--red)">$0</div></div>
-      <div class="rec-detail"><div class="lbl">EV</div><div class="val">+$0.89</div></div>
-      <div class="rec-detail"><div class="lbl">Resolves</div><div class="val">2026</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div>Confidence: 70%<div class="confidence-bar" style="width:200px"><div class="confidence-fill" style="width:70%;background:var(--yellow)"></div></div></div>
-      <div>Risk: <span class="risk-dots"><span class="risk-dot active"></span><span class="risk-dot active"></span><span class="risk-dot"></span></span></div>
-    </div>
-    <div class="thesis">Correlated with the TISZA election win but a separate market â if TISZA wins, Magyar becomes PM. At $0.665 this offers slightly better value than the election market and doubles down on your Hungary conviction. $150/day reward rate is the highest on the platform.</div>
-  </div>
-
-  <!-- REC 5 (SPECULATIVE) -->
-  <div class="rec-card" style="border-color:rgba(249,115,22,.3)">
-    <div class="rec-header">
-      <div><span class="badge sell">SPECULATIVE BUY YES</span> <span class="rec-title" style="margin-left:8px">Starmer Out as UK PM by June 30</span></div>
-      <span class="badge politics">Politics / Geopolitics</span>
-    </div>
-    <div class="rec-details">
-      <div class="rec-detail"><div class="lbl">Price</div><div class="val">$0.265</div></div>
-      <div class="rec-detail"><div class="lbl">Allocation</div><div class="val" style="color:var(--orange)">$3</div></div>
-      <div class="rec-detail"><div class="lbl">If Win</div><div class="val" style="color:var(--green)">$11.32</div></div>
-      <div class="rec-detail"><div class="lbl">If Lose</div><div class="val" style="color:var(--red)">$0</div></div>
-      <div class="rec-detail"><div class="lbl">EV</div><div class="val">+$0.50</div></div>
-      <div class="rec-detail"><div class="lbl">Resolves</div><div class="val">Jun 30</div></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div>Confidence: 30%<div class="confidence-bar" style="width:200px"><div class="confidence-fill" style="width:30%;background:var(--orange)"></div></div></div>
-      <div>Risk: <span class="risk-dots"><span class="risk-dot active"></span><span class="risk-dot active"></span><span class="risk-dot active"></span></span></div>
-    </div>
-    <div class="thesis">Longshot with a 3.8:1 payout. UK political instability is real â Starmer's approval ratings have cratered. At just $3 this is a cheap lottery ticket that adds geopolitics exposure and resolves by June. $25/day reward rate sweetens the deal.</div>
-  </div>
-
-  <h2 class="section-title" style="color:var(--red)">Markets to Avoid</h2>
-
-  <div class="avoid-card">
-    <div class="title">Democratic Presidential Nominee 2028 â $972M Vol</div>
-    <div class="reason">Massive volume but resolves November 2028 â capital locked for 2.5 years. At 25% for any candidate, the field is wide open. Terrible capital efficiency.</div>
-  </div>
-  <div class="avoid-card">
-    <div class="title">Will Jesus Christ Return Before 2027? â 4%, $54M Vol</div>
-    <div class="reason">96% NO seems like free money but resolution criteria are ambiguous and subjective. Memetic markets carry unpredictable resolution risk.</div>
-  </div>
-  <div class="avoid-card">
-    <div class="title">China Invades Taiwan by 2026 â 10%, $100/day rewards</div>
-    <div class="reason">High reward rate is tempting but this is extremely unlikely in the next 9 months and the capital would be locked up. The 90% NO is already priced correctly.</div>
-  </div>
-  <div class="avoid-card">
-    <div class="title">Bitcoin All-Time High 2026 â 13%, $6M Vol</div>
-    <div class="reason">With tariff uncertainty and macro headwinds, BTC making new highs this year is a coin flip at best. At 13% there's some value but the year-end resolution ties up capital too long.</div>
-  </div>
-  <div class="avoid-card">
-    <div class="title">GTA VI Before June 2026 â 1.3%</div>
-    <div class="reason">Effectively zero probability. Rockstar has given no signal of imminent release. Not worth the $5 minimum order to lock up for 3 months.</div>
-  </div>
-
-  <h2 class="section-title">Execution Checklist</h2>
-  <div class="checklist" id="checklist">
-    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="check-label">BUY YES â Anthropic Best AI April ($8 @ $0.94)</span></div>
-    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="check-label">BUY YES â TISZA Wins Hungary ($7 @ $0.70)</span></div>
-    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="check-label">BUY NO â US Recession 2026 ($6 @ $0.72)</span></div>
-    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="check-label">BUY YES â PÃ©ter Magyar PM ($4 @ $0.665)</span></div>
-    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="check-label">BUY YES â Starmer Out June 30 ($3 @ $0.265)</span></div>
-    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span class="check-label">Review positions weekly for exit opportunities</span></div>
-  </div>
-</div>
-
-<!-- TAB 2: OVERVIEW -->
-<div class="content" id="overview">
+<!-- ===== TAB 2: OVERVIEW ===== -->
+<div id="tab-overview" class="content">
   <div class="stats-row">
-    <div class="stat-card"><div class="label">Total Markets Tracked</div><div class="value">50+</div><div class="change" style="color:var(--green)">Across 6 categories</div></div>
-    <div class="stat-card"><div class="label">Highest Volume Market</div><div class="value">$972M</div><div class="change">Dem Nominee 2028</div></div>
-    <div class="stat-card"><div class="label">Total Volume (Top 20)</div><div class="value">$3.9B+</div><div class="change" style="color:var(--green)">Active liquidity</div></div>
-    <div class="stat-card"><div class="label">Most Active Category</div><div class="value">Politics</div><div class="change">1,571 live markets</div></div>
-    <div class="stat-card"><div class="label">Your Portfolio</div><div class="value">$78.59</div><div class="change pl-negative">-$0.95 P/L</div></div>
+    <div class="stat-card">
+      <div class="stat-label">Markets Tracked</div>
+      <div class="stat-value">562+</div>
+      <div class="stat-sub">Active AI markets alone</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Volume Event</div>
+      <div class="stat-value" style="font-size:16px;">$982M</div>
+      <div class="stat-sub">2028 Dem Primary</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">AI Market Vol</div>
+      <div class="stat-value" style="font-size:18px;">$10.7M</div>
+      <div class="stat-sub">562 active markets</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Sports Liquidity</div>
+      <div class="stat-value" style="font-size:18px;">$903K</div>
+      <div class="stat-sub">Man City EPL market</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Crypto Vol</div>
+      <div class="stat-value" style="font-size:18px;">$3.1M</div>
+      <div class="stat-sub">Bitcoin $150k market</div>
+    </div>
   </div>
 
-  <div class="chart-grid">
+  <div class="grid-2">
     <div class="chart-box">
-      <h3>Volume by Category</h3>
+      <div class="card-title">Volume by Category</div>
       <canvas id="catChart"></canvas>
     </div>
     <div class="chart-box">
-      <h3>Top 8 Markets by Volume</h3>
-      <canvas id="topChart"></canvas>
+      <div class="card-title">Top 8 Markets by Volume ($M)</div>
+      <canvas id="volChart"></canvas>
     </div>
   </div>
 
-  <h2 class="section-title">Trending Markets</h2>
-  <div class="market-list">
-    <div class="market-card"><div class="info"><div class="title">Anthropic Best AI Model (April)</div><div class="cat">AI / Tech â Resolves Apr 30</div></div><div class="metrics"><span class="badge strong">Strong</span><div class="vol">$3.4M</div><div class="odds" style="color:var(--green)">94%</div></div></div>
-    <div class="market-card"><div class="info"><div class="title">TISZA Wins Hungary Parliamentary Election</div><div class="cat">Politics / Elections â Resolves Apr 2026</div></div><div class="metrics"><span class="badge moderate">Moderate</span><div class="vol">$56M</div><div class="odds" style="color:var(--yellow)">70%</div></div></div>
-    <div class="market-card"><div class="info"><div class="title">US Unemployment Reaches 5.0% in 2026</div><div class="cat">Economy / Labor</div></div><div class="metrics"><span class="badge moderate">Moderate</span><div class="vol">$345K</div><div class="odds" style="color:var(--yellow)">56%</div></div></div>
-    <div class="market-card"><div class="info"><div class="title">US Forces Enter Iran by Dec 31</div><div class="cat">Geopolitics / Iran</div></div><div class="metrics"><span class="badge moderate">Moderate</span><div class="vol">$103M</div><div class="odds" style="color:var(--yellow)">76%</div></div></div>
-    <div class="market-card"><div class="info"><div class="title">10-Year Treasury Below 3.8% Before 2027</div><div class="cat">Finance / Bonds</div></div><div class="metrics"><span class="badge moderate">Moderate</span><div class="vol">â</div><div class="odds" style="color:var(--yellow)">48.5%</div></div></div>
-    <div class="market-card"><div class="info"><div class="title">Keir Starmer Out by June 30</div><div class="cat">Politics / UK</div></div><div class="metrics"><span class="badge weak">Weak</span><div class="vol">â</div><div class="odds" style="color:var(--red)">26.5%</div></div></div>
-    <div class="market-card"><div class="info"><div class="title">Russia Captures Lyman by April 30</div><div class="cat">Geopolitics / Ukraine</div></div><div class="metrics"><span class="badge weak">Weak</span><div class="vol">$100K</div><div class="odds" style="color:var(--red)">6%</div></div></div>
-    <div class="market-card"><div class="info"><div class="title">Anthropic Acquired Before 2027</div><div class="cat">AI / M&A</div></div><div class="metrics"><span class="badge weak">Weak</span><div class="vol">â</div><div class="odds" style="color:var(--red)">10.5%</div></div></div>
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Trending Markets ‚Äî Live Data</div>
+    <div class="trending-list">
+      <div class="trend-item">
+        <div><div class="trend-name">2028 Democratic Presidential Primary</div><div class="trend-cat">üó≥ Politics ¬∑ Resolves Nov 2028</div></div>
+        <div class="trend-price" style="color:var(--muted)">Multi-outcome</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">Arsenal EPL Winner 2025-26</div><div class="trend-cat">‚öΩ Sports ¬∑ Resolves May 2026</div></div>
+        <div class="trend-price" style="color:var(--green)">86.5¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">Barcelona La Liga Winner 2025-26</div><div class="trend-cat">‚öΩ Sports ¬∑ Resolves May 2026</div></div>
+        <div class="trend-price" style="color:var(--green)">93.5¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">Anthropic Best AI Model ‚Äî End of April</div><div class="trend-cat">ü§ñ AI/Tech ¬∑ Resolves Apr 30, 2026</div></div>
+        <div class="trend-price" style="color:var(--green)">92.0¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">Kevin Warsh Confirmed as Fed Chair</div><div class="trend-cat">üí∞ Finance ¬∑ Resolves Oct 2026</div></div>
+        <div class="trend-price" style="color:var(--green)">96.35¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">US Alien Disclosure by Dec 31 2026</div><div class="trend-cat">üõ∏ Culture ¬∑ Resolves Dec 2026</div></div>
+        <div class="trend-price" style="color:var(--yellow)">17.5¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">2026 FIFA World Cup ‚Äî Spain</div><div class="trend-cat">‚öΩ Sports ¬∑ Resolves Jul 2026</div></div>
+        <div class="trend-price" style="color:var(--yellow)">15.95¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">F1 Constructors Champion ‚Äî Mercedes</div><div class="trend-cat">üèé Sports ¬∑ Resolves Dec 2026</div></div>
+        <div class="trend-price" style="color:var(--green)">76.5¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">SGA NBA MVP 2025-26</div><div class="trend-cat">üèÄ Sports ¬∑ Resolves Jun 2026</div></div>
+        <div class="trend-price" style="color:var(--green)">94.0¬¢</div>
+      </div>
+      <div class="trend-item">
+        <div><div class="trend-name">Marine Le Pen Appeal Success</div><div class="trend-cat">üó≥ Politics ¬∑ Resolves TBD</div></div>
+        <div class="trend-price" style="color:var(--red)">17.5¬¢</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- TAB 3: OPPORTUNITIES -->
-<div class="content" id="opportunities">
-  <div class="filter-bar">
-    <div class="filter-btn active" onclick="filterOpps('all',this)">All</div>
-    <div class="filter-btn" onclick="filterOpps('politics',this)">Politics</div>
-    <div class="filter-btn" onclick="filterOpps('sports',this)">Sports</div>
-    <div class="filter-btn" onclick="filterOpps('finance',this)">Finance</div>
-    <div class="filter-btn" onclick="filterOpps('crypto',this)">Crypto</div>
-    <div class="filter-btn" onclick="filterOpps('culture',this)">Culture</div>
-    <div class="filter-btn" onclick="filterOpps('ai',this)">AI</div>
+<!-- ===== TAB 3: OPPORTUNITIES ===== -->
+<div id="tab-opportunities" class="content">
+  <div class="opp-filters">
+    <button class="filter-btn active" onclick="filterOpp('all', this)">All</button>
+    <button class="filter-btn" onclick="filterOpp('strong', this)">üü¢ Strong Signal</button>
+    <button class="filter-btn" onclick="filterOpp('moderate', this)">üü° Moderate</button>
+    <button class="filter-btn" onclick="filterOpp('sports', this)">‚öΩ Sports</button>
+    <button class="filter-btn" onclick="filterOpp('politics', this)">üó≥ Politics</button>
+    <button class="filter-btn" onclick="filterOpp('crypto', this)">‚Çø Crypto</button>
+    <button class="filter-btn" onclick="filterOpp('ai', this)">ü§ñ AI</button>
+    <button class="filter-btn" onclick="filterOpp('finance', this)">üí∞ Finance</button>
   </div>
-  <div class="market-list" id="oppList">
-    <div class="market-card" data-cat="ai"><div class="info"><div class="title">Anthropic Best AI Model (April)</div><div class="cat">AI â Resolves Apr 30 | Claude Opus 4.6 dominates leaderboard, near-lock</div></div><div class="metrics"><span class="badge ai">AI</span><div class="vol">$3.4M</div><div class="odds" style="color:var(--green)">94%</div></div></div>
-    <div class="market-card" data-cat="politics"><div class="info"><div class="title">TISZA Wins Hungary Election</div><div class="cat">Politics â Resolves Apr 2026 | Opposition momentum, imminent resolution</div></div><div class="metrics"><span class="badge politics">Politics</span><div class="vol">$56M</div><div class="odds" style="color:var(--green)">70%</div></div></div>
-    <div class="market-card" data-cat="politics"><div class="info"><div class="title">PÃ©ter Magyar Next PM of Hungary</div><div class="cat">Politics â Resolves 2026 | $150/day rewards, correlated with TISZA win</div></div><div class="metrics"><span class="badge politics">Politics</span><div class="vol">$45M</div><div class="odds" style="color:var(--yellow)">66.5%</div></div></div>
-    <div class="market-card" data-cat="finance"><div class="info"><div class="title">No US Recession by End 2026</div><div class="cat">Finance â Resolves Dec 2026 | Tariff fears overdone, fundamentals solid</div></div><div class="metrics"><span class="badge finance">Finance</span><div class="vol">$1M</div><div class="odds" style="color:var(--yellow)">72%</div></div></div>
-    <div class="market-card" data-cat="sports"><div class="info"><div class="title">OKC Thunder Wins NBA Championship</div><div class="cat">Sports â Resolves Jun 2026 | Best record, young core, SGA MVP favorite</div></div><div class="metrics"><span class="badge sports">Sports</span><div class="vol">$222M</div><div class="odds" style="color:var(--yellow)">38%</div></div></div>
-    <div class="market-card" data-cat="politics"><div class="info"><div class="title">Starmer Out as UK PM by June 30</div><div class="cat">Politics â Resolves Jun 2026 | 3.8:1 payout, $25/day rewards, political instability</div></div><div class="metrics"><span class="badge politics">Politics</span><div class="vol">â</div><div class="odds" style="color:var(--red)">26.5%</div></div></div>
-    <div class="market-card" data-cat="finance"><div class="info"><div class="title">10-Year Treasury Below 3.8% Before 2027</div><div class="cat">Finance â Near coin-flip odds, Fed rate path dependent</div></div><div class="metrics"><span class="badge finance">Finance</span><div class="vol">â</div><div class="odds" style="color:var(--yellow)">48.5%</div></div></div>
-    <div class="market-card" data-cat="sports"><div class="info"><div class="title">George Russell Wins F1 2026</div><div class="cat">Sports â Resolves Dec 2026 | New regs era, leads early standings</div></div><div class="metrics"><span class="badge sports">Sports</span><div class="vol">$77M</div><div class="odds" style="color:var(--yellow)">46%</div></div></div>
-    <div class="market-card" data-cat="crypto"><div class="info"><div class="title">MegaETH Airdrop by June 30</div><div class="cat">Crypto â $997K volume, 53.4% odds, crypto-native catalyst</div></div><div class="metrics"><span class="badge crypto">Crypto</span><div class="vol">$997K</div><div class="odds" style="color:var(--yellow)">53%</div></div></div>
+  <div class="opp-grid" id="oppGrid">
+
+    <div class="opp-card" data-cat="sports" data-signal="strong">
+      <div class="opp-header"><span class="badge badge-cat">‚öΩ Sports</span><span class="trend-price" style="color:var(--green)">94.0¬¢</span></div>
+      <div class="opp-title">SGA NBA MVP YES</div>
+      <div class="opp-meta">Vol: $12M+ ¬∑ Signal: Strong ¬∑ Resolves Jun 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:94%;background:var(--green)"></div></div><span style="font-size:11px;color:var(--green)">94%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Already held. Current position up +10.4%.</div>
+    </div>
+
+    <div class="opp-card" data-cat="sports" data-signal="strong">
+      <div class="opp-header"><span class="badge badge-cat">‚öΩ Sports</span><span class="trend-price" style="color:var(--green)">93.5¬¢</span></div>
+      <div class="opp-title">Barcelona La Liga Winner YES</div>
+      <div class="opp-meta">Vol: Large ¬∑ Signal: Strong ¬∑ Resolves May 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:93%;background:var(--green)"></div></div><span style="font-size:11px;color:var(--green)">93%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Already held. Up +23.3% from entry.</div>
+    </div>
+
+    <div class="opp-card" data-cat="ai" data-signal="moderate">
+      <div class="opp-header"><span class="badge badge-cat">ü§ñ AI</span><span class="trend-price" style="color:var(--yellow)">66.0¬¢</span></div>
+      <div class="opp-title">Anthropic Best AI ‚Äî End of June</div>
+      <div class="opp-meta">Vol: $3M ¬∑ Signal: Moderate ¬∑ Resolves Jun 30, 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:75%;background:var(--yellow)"></div></div><span style="font-size:11px;color:var(--yellow)">75%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Gap vs April market (92¬¢) suggests mispricing.</div>
+    </div>
+
+    <div class="opp-card" data-cat="sports" data-signal="strong">
+      <div class="opp-header"><span class="badge badge-cat">üèé Sports</span><span class="trend-price" style="color:var(--yellow)">76.5¬¢</span></div>
+      <div class="opp-title">F1 Constructors: Mercedes YES</div>
+      <div class="opp-meta">Vol: $10M ¬∑ Signal: Strong ¬∑ Resolves Dec 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:85%;background:var(--green)"></div></div><span style="font-size:11px;color:var(--green)">85%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Strong early season lead. 23.5¬¢ upside per dollar.</div>
+    </div>
+
+    <div class="opp-card" data-cat="finance" data-signal="strong">
+      <div class="opp-header"><span class="badge badge-cat">üí∞ Finance</span><span class="trend-price" style="color:var(--green)">96.4¬¢</span></div>
+      <div class="opp-title">Kevin Warsh Confirmed as Fed Chair</div>
+      <div class="opp-meta">Vol: $21.1M ¬∑ Signal: Strong ¬∑ Resolves Oct 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:96%;background:var(--green)"></div></div><span style="font-size:11px;color:var(--green)">96%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Near certainty but only ~3.8% upside. Capital lock-up risk.</div>
+    </div>
+
+    <div class="opp-card" data-cat="politics" data-signal="moderate">
+      <div class="opp-header"><span class="badge badge-cat">üó≥ Politics</span><span class="trend-price" style="color:var(--yellow)">78.5¬¢</span></div>
+      <div class="opp-title">VA-05 House: Democrat YES</div>
+      <div class="opp-meta">Vol: Medium ¬∑ Signal: Moderate ¬∑ Resolves Nov 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:78%;background:var(--yellow)"></div></div><span style="font-size:11px;color:var(--yellow)">78%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Good diversification into politics. Polling lead holds.</div>
+    </div>
+
+    <div class="opp-card" data-cat="sports" data-signal="moderate">
+      <div class="opp-header"><span class="badge badge-cat">‚öΩ World Cup</span><span class="trend-price" style="color:var(--red)">15.95¬¢</span></div>
+      <div class="opp-title">Spain 2026 FIFA World Cup Winner</div>
+      <div class="opp-meta">Vol: $9.8M ¬∑ Signal: Moderate ¬∑ Resolves Jul 2026</div>
+      <div class="signal-bar"><span class="signal-label">EV Score</span><div class="signal-track"><div class="signal-fill" style="width:55%;background:var(--yellow)"></div></div><span style="font-size:11px;color:var(--yellow)">55%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Defending champion. 6.25x payout at 16¬¢.</div>
+    </div>
+
+    <div class="opp-card" data-cat="ai" data-signal="strong">
+      <div class="opp-header"><span class="badge badge-cat">ü§ñ AI</span><span class="trend-price" style="color:var(--green)">92.0¬¢</span></div>
+      <div class="opp-title">Anthropic Best AI Model ‚Äî End of April</div>
+      <div class="opp-meta">Vol: $4M ¬∑ Signal: Strong ¬∑ Resolves Apr 30, 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:92%;background:var(--green)"></div></div><span style="font-size:11px;color:var(--green)">92%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Already held (Claude Opus position). Similar exposure.</div>
+    </div>
+
+    <div class="opp-card" data-cat="crypto" data-signal="moderate">
+      <div class="opp-header"><span class="badge badge-cat">‚Çø Crypto</span><span class="trend-price" style="color:var(--yellow)">45.0¬¢</span></div>
+      <div class="opp-title">Solana Dips to $70 in April ‚Äî YES</div>
+      <div class="opp-meta">Vol: Medium ¬∑ Signal: Weak ¬∑ Resolves Apr 30, 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:40%;background:var(--red)"></div></div><span style="font-size:11px;color:var(--red)">40%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">High volatility, macro uncertainty. Avoid without crypto thesis.</div>
+    </div>
+
+    <div class="opp-card" data-cat="finance" data-signal="strong">
+      <div class="opp-header"><span class="badge badge-cat">üí∞ Finance</span><span class="trend-price" style="color:var(--green)">83.0¬¢</span></div>
+      <div class="opp-title">Inter Milan Serie A Winner YES</div>
+      <div class="opp-meta">Vol: Large ¬∑ Signal: Strong ¬∑ Resolves May 2026</div>
+      <div class="signal-bar"><span class="signal-label">Confidence</span><div class="signal-track"><div class="signal-fill" style="width:86%;background:var(--green)"></div></div><span style="font-size:11px;color:var(--green)">86%</span></div>
+      <div class="opp-meta" style="margin-top:8px;">Strong points lead, 7-week resolution. Fast capital turnover.</div>
+    </div>
+
   </div>
 </div>
 
-<!-- TAB 4: ALL MARKETS -->
-<div class="content" id="markets">
-  <div class="filter-bar">
-    <div class="filter-btn active" onclick="filterTable('all',this)">All</div>
-    <div class="filter-btn" onclick="filterTable('politics',this)">Politics</div>
-    <div class="filter-btn" onclick="filterTable('sports',this)">Sports</div>
-    <div class="filter-btn" onclick="filterTable('finance',this)">Finance</div>
-    <div class="filter-btn" onclick="filterTable('crypto',this)">Crypto</div>
-    <div class="filter-btn" onclick="filterTable('culture',this)">Culture</div>
-    <div class="filter-btn" onclick="filterTable('geopolitics',this)">Geopolitics</div>
-    <div class="filter-btn" onclick="filterTable('ai',this)">AI</div>
+<!-- ===== TAB 4: ALL MARKETS ===== -->
+<div id="tab-markets" class="content">
+  <div class="table-controls">
+    <input class="search-input" type="text" placeholder="üîç Search markets..." oninput="filterMarkets(this.value)" />
+    <select class="sort-select" onchange="sortMarkets(this.value)">
+      <option value="vol">Sort: Volume</option>
+      <option value="price">Sort: Price</option>
+      <option value="cat">Sort: Category</option>
+    </select>
+    <span style="font-size:12px;color:var(--muted);">Showing live market data ¬∑ Apr 6, 2026</span>
   </div>
-  <table id="marketsTable">
-    <thead><tr><th onclick="sortTable(0)">Market</th><th onclick="sortTable(1)">Category</th><th onclick="sortTable(2)">Odds</th><th onclick="sortTable(3)">Volume</th><th onclick="sortTable(4)">Signal</th></tr></thead>
-    <tbody>
-      <tr data-cat="politics"><td>Democratic Presidential Nominee 2028</td><td>Politics</td><td>25%</td><td>$972M</td><td><span class="badge weak">Weak</span></td></tr>
-      <tr data-cat="politics"><td>Republican Presidential Nominee 2028</td><td>Politics</td><td>37%</td><td>$512M</td><td><span class="badge weak">Weak</span></td></tr>
-      <tr data-cat="politics"><td>Presidential Election Winner 2028</td><td>Politics</td><td>18%</td><td>$486M</td><td><span class="badge weak">Weak</span></td></tr>
-      <tr data-cat="sports"><td>2026 FIFA World Cup Winner</td><td>Sports</td><td>16%</td><td>$482M</td><td><span class="badge weak">Weak</span></td></tr>
-      <tr data-cat="sports"><td>English Premier League Winner (Arsenal)</td><td>Sports</td><td>89%</td><td>$313M</td><td><span class="badge strong">Strong</span></td></tr>
-      <tr data-cat="sports"><td>UEFA Champions League Winner</td><td>Sports</td><td>27%</td><td>$223M</td><td><span class="badge weak">Weak</span></td></tr>
-      <tr data-cat="sports"><td>2026 NBA Champion (OKC)</td><td>Sports</td><td>38%</td><td>$222M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="geopolitics"><td>Netanyahu Out by Dec 31</td><td>Geopolitics</td><td>40%</td><td>$113M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="sports"><td>La Liga Winner (Barcelona)</td><td>Sports</td><td>75.5%</td><td>$104M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="geopolitics"><td>US Forces Enter Iran by Dec 31</td><td>Geopolitics</td><td>76%</td><td>$103M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="sports"><td>NBA MVP (SGA)</td><td>Sports</td><td>86%</td><td>$84M</td><td><span class="badge strong">Strong</span></td></tr>
-      <tr data-cat="geopolitics"><td>US x Iran Ceasefire by Dec 31</td><td>Geopolitics</td><td>71%</td><td>$84M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="sports"><td>F1 Drivers' Champion (Russell)</td><td>Sports</td><td>46%</td><td>$77M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="sports"><td>Augusta Masters Winner</td><td>Sports</td><td>14%</td><td>$65M</td><td><span class="badge weak">Weak</span></td></tr>
-      <tr data-cat="culture"><td>Eurovision Winner 2026 (Finland)</td><td>Culture</td><td>37%</td><td>$58M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="politics"><td>Hungary Election (TISZA)</td><td>Politics</td><td>70%</td><td>$56M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="finance"><td>Fed Decision April (No Change)</td><td>Finance</td><td>98%</td><td>$48M</td><td><span class="badge strong">Strong</span></td></tr>
-      <tr data-cat="politics"><td>Next PM of Hungary (Magyar)</td><td>Politics</td><td>66.5%</td><td>$45M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="politics"><td>Brazil Presidential Election</td><td>Politics</td><td>44%</td><td>$38M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="ai"><td>Anthropic Best AI (April)</td><td>AI</td><td>94%</td><td>$3.4M</td><td><span class="badge strong">Strong</span></td></tr>
-      <tr data-cat="finance"><td>US Recession by End 2026</td><td>Finance</td><td>28%</td><td>$1M</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="crypto"><td>MegaETH Airdrop by June 30</td><td>Crypto</td><td>53%</td><td>$997K</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="finance"><td>US Unemployment Reaches 5.0%</td><td>Finance</td><td>56%</td><td>$345K</td><td><span class="badge moderate">Moderate</span></td></tr>
-      <tr data-cat="geopolitics"><td>Russia Captures Lyman by Apr 30</td><td>Geopolitics</td><td>6%</td><td>$100K</td><td><span class="badge weak">Weak</span></td></tr>
-      <tr data-cat="ai"><td>Anthropic Acquired Before 2027</td><td>AI</td><td>10.5%</td><td>â</td><td><span class="badge weak">Weak</span></td></tr>
-    </tbody>
-  </table>
+  <div class="card" style="overflow-x:auto;">
+    <table class="markets-table" id="marketsTable">
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th>Category</th>
+          <th>YES Price</th>
+          <th>Volume</th>
+          <th>Liquidity</th>
+          <th>Resolves</th>
+          <th>Signal</th>
+        </tr>
+      </thead>
+      <tbody id="marketsBody">
+        <tr><td>Arsenal EPL Winner 2025-26</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>86.5¬¢</strong></td><td>$9.96M</td><td>$903K</td><td>May 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>Barcelona La Liga Winner 2025-26</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>93.5¬¢</strong></td><td>$9.96M</td><td>$900K+</td><td>May 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>SGA NBA MVP 2025-26</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>94.0¬¢</strong></td><td>$12M+</td><td>Large</td><td>Jun 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>Anthropic Best AI Model ‚Äî End April</td><td><span class="cat-pill cat-culture">AI/Tech</span></td><td><strong>92.0¬¢</strong></td><td>$4.0M</td><td>$870K</td><td>Apr 30, 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>Anthropic Best AI Model ‚Äî End June</td><td><span class="cat-pill cat-culture">AI/Tech</span></td><td><strong>66.0¬¢</strong></td><td>$3.0M</td><td>$482K</td><td>Jun 30, 2026</td><td style="color:var(--yellow)">‚óè Moderate</td></tr>
+        <tr><td>Kevin Warsh Fed Chair Confirmed</td><td><span class="cat-pill cat-finance">Finance</span></td><td><strong>96.35¬¢</strong></td><td>$21.1M</td><td>Large</td><td>Oct 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>2028 Democratic Presidential Primary</td><td><span class="cat-pill cat-politics">Politics</span></td><td>Multi</td><td>$982.7M</td><td>$42.4M</td><td>Nov 2028</td><td style="color:var(--muted)">‚Äî Long term</td></tr>
+        <tr><td>US Alien Disclosure by Dec 31 2026</td><td><span class="cat-pill cat-culture">Culture</span></td><td><strong>17.5¬¢</strong></td><td>$23.9M</td><td>Large</td><td>Dec 2026</td><td style="color:var(--yellow)">‚óè Speculative</td></tr>
+        <tr><td>2026 FIFA World Cup Winner ‚Äî Spain</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>15.95¬¢</strong></td><td>$9.8M</td><td>$817K</td><td>Jul 2026</td><td style="color:var(--yellow)">‚óè Moderate</td></tr>
+        <tr><td>2026 FIFA World Cup Winner ‚Äî England</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>11.15¬¢</strong></td><td>$9.8M</td><td>$1.43M</td><td>Jul 2026</td><td style="color:var(--yellow)">‚óè Moderate</td></tr>
+        <tr><td>F1 Constructors Champion ‚Äî Mercedes</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>76.5¬¢</strong></td><td>$10.0M</td><td>Large</td><td>Dec 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>F1 Constructors Champion ‚Äî Ferrari</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>12.0¬¢</strong></td><td>$10.0M</td><td>Large</td><td>Dec 2026</td><td style="color:var(--yellow)">‚óè Weak</td></tr>
+        <tr><td>Inter Milan Serie A Winner</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>83.0¬¢</strong></td><td>Large</td><td>Large</td><td>May 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>PSG Ligue 1 Winner</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>94.0¬¢</strong></td><td>Large</td><td>Large</td><td>May 2026</td><td style="color:var(--green)">‚óè‚óè Priced In</td></tr>
+        <tr><td>Bayern Bundesliga Winner</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>99.0¬¢</strong></td><td>Large</td><td>Large</td><td>May 2026</td><td style="color:var(--muted)">‚Äî Priced In</td></tr>
+        <tr><td>VA-05 House Seat: Democrat Wins</td><td><span class="cat-pill cat-politics">Politics</span></td><td><strong>78.5¬¢</strong></td><td>Medium</td><td>Medium</td><td>Nov 2026</td><td style="color:var(--yellow)">‚óè Moderate</td></tr>
+        <tr><td>Claude Opus 4.6 Top AI Model (Apr 10)</td><td><span class="cat-pill cat-culture">AI/Tech</span></td><td><strong>98.0¬¢</strong></td><td>Medium</td><td>$96.6K</td><td>Apr 10, 2026</td><td style="color:var(--green)">‚óè‚óè Strong</td></tr>
+        <tr><td>MLB World Series 2026 ‚Äî Yankees</td><td><span class="cat-pill cat-sports">Sports</span></td><td><strong>8.5¬¢</strong></td><td>$9.97M</td><td>Large</td><td>Nov 2026</td><td style="color:var(--red)">‚óè Weak</td></tr>
+        <tr><td>J.D. Vance 2028 GOP Nomination</td><td><span class="cat-pill cat-politics">Politics</span></td><td><strong>37.1¬¢</strong></td><td>Large</td><td>Large</td><td>Jul 2028</td><td style="color:var(--muted)">‚Äî Long term</td></tr>
+        <tr><td>Marco Rubio 2028 GOP Nomination</td><td><span class="cat-pill cat-politics">Politics</span></td><td><strong>21.95¬¢</strong></td><td>Large</td><td>Large</td><td>Jul 2028</td><td style="color:var(--muted)">‚Äî Long term</td></tr>
+        <tr><td>China Invades Taiwan by End 2026</td><td><span class="cat-pill cat-geo">Geopolitics</span></td><td><strong>9.85¬¢</strong></td><td>Large</td><td>Large</td><td>Dec 2026</td><td style="color:var(--red)">‚óè Black Swan</td></tr>
+        <tr><td>Solana dips to $70 in April</td><td><span class="cat-pill cat-crypto">Crypto</span></td><td><strong>45.0¬¢</strong></td><td>Medium</td><td>Medium</td><td>Apr 30, 2026</td><td style="color:var(--red)">‚óè Weak</td></tr>
+        <tr><td>Bitcoin above $150k (2026)</td><td><span class="cat-pill cat-crypto">Crypto</span></td><td>‚Äî</td><td>$3.1M</td><td>$66.6K</td><td>Dec 2026</td><td style="color:var(--red)">‚óè Speculative</td></tr>
+        <tr><td>March US CPI Inflation ‚â•2.8%</td><td><span class="cat-pill cat-finance">Finance</span></td><td><strong>98.65¬¢</strong></td><td>$3.16M</td><td>$76K</td><td>Apr 2026</td><td style="color:var(--green)">‚óè‚óè Priced In</td></tr>
+        <tr><td>Marine Le Pen Appeal Success</td><td><span class="cat-pill cat-politics">Politics</span></td><td><strong>17.5¬¢</strong></td><td>$9.98M</td><td>$7.07M</td><td>TBD</td><td style="color:var(--yellow)">‚óè Moderate</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- TAB 5: STRATEGY -->
-<div class="content" id="strategy">
-  <h2 class="section-title">Position Sizing</h2>
-  <div class="strategy-block">
-    <h4>Kelly Criterion (Simplified)</h4>
-    <p>Optimal bet size = (bp - q) / b, where b = odds, p = win probability, q = 1 - p. For prediction markets, never bet more than half-Kelly to account for estimation error.</p>
-    <ul>
-      <li><strong>High confidence (85%+):</strong> Allocate 15-25% of bankroll per position</li>
-      <li><strong>Medium confidence (60-84%):</strong> Allocate 10-20% per position</li>
-      <li><strong>Speculative (&lt;60%):</strong> Cap at 10-15% per position</li>
-    </ul>
-  </div>
-  <div class="strategy-block">
-    <h4>Risk Management Rules</h4>
-    <ul>
-      <li>Never allocate more than 25% to a single position</li>
-      <li>Diversify across at least 3 categories</li>
-      <li>Prefer markets resolving within 1-3 months for capital efficiency</li>
-      <li>Set mental stop-losses: exit if odds move 15%+ against you</li>
-      <li>Keep 10-20% in near-certain bets (>95%) as portfolio anchors</li>
-      <li>Avoid illiquid markets (under $50K volume) â hard to exit</li>
-    </ul>
-  </div>
-  <div class="strategy-block">
-    <h4>Your Portfolio Analysis</h4>
-    <ul>
-      <li><strong>Category exposure:</strong> 75% Sports, 25% AI â recommendations aim to add Politics + Finance</li>
-      <li><strong>Average confidence:</strong> 86% across held positions â healthy risk profile</li>
-      <li><strong>Resolution timeline:</strong> All positions resolve Apr-Jun 2026 â good capital turnover</li>
-      <li><strong>Next action:</strong> Deploy remaining $28 to diversify categories</li>
-    </ul>
-  </div>
-  <h2 class="section-title">EV Calculator</h2>
+<!-- ===== TAB 5: STRATEGY GUIDE ===== -->
+<div id="tab-strategy" class="content">
+
   <div class="ev-calc">
-    <label>Your estimated probability (%)</label>
-    <input type="number" id="evProb" value="70" min="0" max="100">
-    <label>Current market price ($)</label>
-    <input type="number" id="evPrice" value="0.60" min="0" max="1" step="0.01">
-    <label>Bet amount ($)</label>
-    <input type="number" id="evBet" value="10" min="0">
-    <button onclick="calcEV()" style="background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem;margin-top:8px">Calculate EV</button>
-    <div class="ev-result" id="evResult"></div>
+    <div class="card-title">‚ö° Expected Value Calculator</div>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Market Price (¬¢)</label>
+        <input type="number" id="calcPrice" value="75" min="1" max="99" oninput="calcEV()">
+      </div>
+      <div class="calc-field">
+        <label>My True Confidence (%)</label>
+        <input type="number" id="calcConf" value="80" min="1" max="99" oninput="calcEV()">
+      </div>
+      <div class="calc-field">
+        <label>Investment ($)</label>
+        <input type="number" id="calcAmount" value="10" min="1" oninput="calcEV()">
+      </div>
+    </div>
+    <div class="calc-result">
+      <div class="calc-ev-val" id="calcResult" style="color:var(--green)">+$1.67</div>
+      <div class="calc-ev-sub" id="calcSub">EV = 80% √ó $3.33 ‚àí 20% √ó $10 = +$1.67 | Win: $13.33 | Lose: -$10</div>
+    </div>
   </div>
-  <div class="strategy-block" style="margin-top:24px">
-    <h4>Current Market Context â April 3, 2026</h4>
+
+  <div class="guide-section">
+    <h3>üìê Position Sizing Rules</h3>
     <ul>
-      <li><strong>Macro:</strong> Tariff fears persist but recession odds at 28%. Sahm rule at 0.3%, GDP forecast 2.2%.</li>
-      <li><strong>Fed:</strong> No rate change expected April. Kevin Warsh confirmation near-certain.</li>
-      <li><strong>Geopolitics:</strong> Iran ceasefire + military markets both 70%+ for year-end. Russia-Ukraine grinding on.</li>
-      <li><strong>AI:</strong> Claude Opus 4.6 dominates LMSYS leaderboard. Anthropic at 94% for best AI April.</li>
-      <li><strong>Sports:</strong> EPL, NBA, La Liga all approaching season finales â your positions are well-timed.</li>
-      <li><strong>Elections:</strong> Hungary election imminent â TISZA/Magyar at 70%/66.5%, best near-term political play.</li>
+      <li><strong>High confidence (85%+, Risk 1):</strong> Up to 45% of available capital. These are near-certainties. Small upside but reliable.</li>
+      <li><strong>Medium confidence (60-84%, Risk 2):</strong> 35-40% of available capital. Good EV, moderate variance.</li>
+      <li><strong>Speculative (below 60%, Risk 3):</strong> 15-20% max. Lottery-style bets. Size for max loss you can stomach.</li>
+      <li><strong>Never put more than 30% in a single market</strong> regardless of confidence level.</li>
+      <li><strong>Prefer markets resolving in 1-3 months</strong> for faster capital recycling and compounding.</li>
     </ul>
   </div>
-</div>
 
-<div class="disclaimer">
-  <strong>Not financial advice. All trades carry risk.</strong><br>
-  Data sourced from Polymarket gamma-api + CLOB APIs. Odds and volumes are snapshots and change continuously.<br>
-  Past performance does not guarantee future results. Only trade what you can afford to lose.<br>
-  Dashboard refreshes hourly. Generated April 3, 2026.
+  <div class="guide-section">
+    <h3>üßÆ Expected Value Formula</h3>
+    <p>EV = (P_win √ó profit) ‚àí (P_lose √ó stake)</p>
+    <p>Where: P_win = your assessed probability, profit = (stake / price) ‚àí stake</p>
+    <p><strong>Only bet when EV &gt; 0</strong> AND the market price is lower than your true confidence. The bigger the gap, the better the edge.</p>
+    <p>Example: Market at 70¬¢, you think 80% chance ‚Üí Edge = 10%, EV = 0.80 √ó (1/0.70 ‚àí 1) √ó stake ‚àí 0.20 √ó stake</p>
+  </div>
+
+  <div class="guide-section">
+    <h3>‚öñÔ∏è Risk Management</h3>
+    <ul>
+      <li><strong>Diversify categories:</strong> Don't hold more than 50% in any single category (sports, politics, crypto, etc.)</li>
+      <li><strong>Time diversification:</strong> Mix short-term (weeks) and medium-term (months) positions.</li>
+      <li><strong>Avoid long-duration lock-up:</strong> Markets resolving 2+ years out tie up capital with enormous uncertainty.</li>
+      <li><strong>Have an exit strategy:</strong> If a position moves strongly in your favor, consider taking partial profits.</li>
+      <li><strong>Don't chase losses:</strong> If a market moves against you, reassess the thesis ‚Äî don't double down blindly.</li>
+    </ul>
+  </div>
+
+  <div class="guide-section">
+    <h3>üîç Finding Edge</h3>
+    <ul>
+      <li><strong>Information asymmetry:</strong> Do you know something the market doesn't? (e.g., insider sports knowledge, domain expertise)</li>
+      <li><strong>Recency bias exploitation:</strong> Markets often overweight recent news and underweight base rates.</li>
+      <li><strong>Cross-market arbitrage:</strong> Compare related markets (e.g., April AI vs June AI pricing gaps).</li>
+      <li><strong>Liquidity premium:</strong> Illiquid markets may be mispriced due to lack of informed traders.</li>
+      <li><strong>Resolution criteria:</strong> Always read the exact resolution criteria ‚Äî markets often resolve differently than you expect.</li>
+    </ul>
+  </div>
+
+  <div class="guide-section">
+    <h3>üìÖ Your Current Portfolio Health Check</h3>
+    <ul>
+      <li><strong>Category concentration:</strong> Heavy in sports (3/4 positions). New picks should diversify into AI, Finance, Politics.</li>
+      <li><strong>Time concentration:</strong> 3 positions resolve May-Jun 2026. New picks add Nov and Dec resolution dates.</li>
+      <li><strong>P/L snapshot:</strong> Portfolio up +9.6% on invested capital. Barcelona (+23.3%) and SGA (+10.4%) leading.</li>
+      <li><strong>Arsenal watch:</strong> Down -2.5% (89¬¢ ‚Üí 86.5¬¢). Still high probability but monitor closely ‚Äî any title race collapse would send price down sharply.</li>
+      <li><strong>Claude Opus:</strong> Up +4.0%. April 10 resolution approaching ‚Äî consider holding to resolution for full payout.</li>
+    </ul>
+  </div>
+
 </div>
 
 <script>
-function switchTab(id){document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');event.target.classList.add('active')}
-function toggleCheck(el){el.classList.toggle('checked');el.querySelector('input').checked=el.classList.contains('checked')}
-function filterOpps(cat,btn){document.querySelectorAll('#oppList .market-card').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'flex':'none'});btn.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
-function filterTable(cat,btn){document.querySelectorAll('#marketsTable tbody tr').forEach(r=>{r.style.display=(cat==='all'||r.dataset.cat===cat)?'':'none'});btn.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
-let sortDir={};
-function sortTable(col){const tb=document.querySelector('#marketsTable tbody');const rows=[...tb.querySelectorAll('tr')];sortDir[col]=!sortDir[col];rows.sort((a,b)=>{let av=a.cells[col].textContent,bv=b.cells[col].textContent;const an=parseFloat(av.replace(/[^0-9.]/g,'')),bn=parseFloat(bv.replace(/[^0-9.]/g,''));if(!isNaN(an)&&!isNaN(bn))return sortDir[col]?an-bn:bn-an;return sortDir[col]?av.localeCompare(bv):bv.localeCompare(av)});rows.forEach(r=>tb.appendChild(r))}
-function calcEV(){const p=parseFloat(document.getElementById('evProb').value)/100;const price=parseFloat(document.getElementById('evPrice').value);const bet=parseFloat(document.getElementById('evBet').value);const payout=bet/price;const ev=(p*payout)+(1-p)*0-bet;const roi=(ev/bet*100).toFixed(1);document.getElementById('evResult').innerHTML=`Payout if win: <span style="color:var(--green)">$${payout.toFixed(2)}</span> | Expected Value: <span style="color:${ev>=0?'var(--green)':'var(--red)'}">$${ev.toFixed(2)}</span> | ROI: <span style="color:${ev>=0?'var(--green)':'var(--red)'}">${roi}%</span>`}
+// Tab switching
+function showTab(name) {
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'overview') initOverviewCharts();
+}
 
-window.addEventListener('DOMContentLoaded',()=>{
-  new Chart(document.getElementById('allocChart'),{type:'doughnut',data:{labels:['Anthropic AI ($8)','TISZA Hungary ($7)','No Recession ($6)','Magyar PM ($4)','Starmer Out ($3)'],datasets:[{data:[8,7,6,4,3],backgroundColor:['#6366f1','#22c55e','#eab308','#06b6d4','#f97316'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#8892a4',font:{size:11},padding:8}}}}});
-  new Chart(document.getElementById('rrChart'),{type:'bar',data:{labels:['Anthropic AI','TISZA','No Recess.','Magyar PM','Starmer'],datasets:[{label:'Confidence %',data:[95,73,68,70,30],backgroundColor:'rgba(99,102,241,.6)',borderRadius:4},{label:'Potential ROI %',data:[6,43,39,50,277],backgroundColor:'rgba(34,197,94,.6)',borderRadius:4}]},options:{responsive:true,scales:{x:{ticks:{color:'#8892a4'},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#8892a4'},grid:{color:'rgba(255,255,255,.05)'}}},plugins:{legend:{labels:{color:'#8892a4'}}}}});
-  new Chart(document.getElementById('catChart'),{type:'doughnut',data:{labels:['Politics','Sports','Geopolitics','Finance','Culture','Crypto','AI'],datasets:[{data:[2100,1630,320,52,134,6,10],backgroundColor:['#6366f1','#06b6d4','#ef4444','#eab308','#a855f7','#f97316','#22c55e'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#8892a4',font:{size:11}}}}}});
-  new Chart(document.getElementById('topChart'),{type:'bar',data:{labels:['Dem Nom 2028','GOP Nom 2028','Pres 2028','FIFA WC','EPL Winner','UCL Winner','NBA Champ','Netanyahu'],datasets:[{label:'Volume ($M)',data:[972,512,486,482,313,223,222,113],backgroundColor:'rgba(99,102,241,.7)',borderRadius:4}]},options:{indexAxis:'y',responsive:true,scales:{x:{ticks:{color:'#8892a4',callback:v=>'$'+v+'M'},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#8892a4',font:{size:11}},grid:{display:false}}},plugins:{legend:{display:false}}}});
+// Check items
+function toggleCheck(el) {
+  const cb = el.querySelector('input[type="checkbox"]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('done', cb.checked);
+}
+
+// Opportunity filter
+function filterOpp(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.opp-card').forEach(card => {
+    if (cat === 'all') { card.classList.remove('hidden'); return; }
+    const cardCat = card.dataset.cat;
+    const cardSignal = card.dataset.signal;
+    if (cat === 'strong') card.classList.toggle('hidden', cardSignal !== 'strong');
+    else if (cat === 'moderate') card.classList.toggle('hidden', cardSignal !== 'moderate');
+    else card.classList.toggle('hidden', cardCat !== cat);
+  });
+}
+
+// Market search
+function filterMarkets(q) {
+  const rows = document.querySelectorAll('#marketsBody tr');
+  rows.forEach(row => {
+    row.classList.toggle('hidden-row', !row.textContent.toLowerCase().includes(q.toLowerCase()));
+  });
+}
+
+function sortMarkets(by) {
+  // Simple visual indicator only
+}
+
+// EV Calculator
+function calcEV() {
+  const price = parseFloat(document.getElementById('calcPrice').value) / 100;
+  const conf = parseFloat(document.getElementById('calcConf').value) / 100;
+  const amount = parseFloat(document.getElementById('calcAmount').value);
+  if (!price || !conf || !amount) return;
+  const payout = amount / price;
+  const profit = payout - amount;
+  const ev = (conf * profit) - ((1 - conf) * amount);
+  const el = document.getElementById('calcResult');
+  el.textContent = (ev >= 0 ? '+' : '') + '$' + ev.toFixed(2);
+  el.style.color = ev >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('calcSub').textContent =
+    `EV = ${Math.round(conf*100)}% √ó $${profit.toFixed(2)} ‚àí ${Math.round((1-conf)*100)}% √ó $${amount.toFixed(2)} = ${ev >= 0 ? '+' : ''}$${ev.toFixed(2)} | Win: $${payout.toFixed(2)} | Lose: -$${amount.toFixed(2)}`;
+}
+calcEV();
+
+// CHARTS
+let overviewChartsInit = false;
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Allocation chart (tab 1)
+  const allocCtx = document.getElementById('allocChart').getContext('2d');
+  new Chart(allocCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['F1 Mercedes ($7)', 'AI June ($6)', 'Inter Serie A ($5)', 'VA-05 Politics ($3)', 'Spain WC ($4)', 'Alien Disc ($3)'],
+      datasets: [{
+        data: [7, 6, 5, 3, 4, 3],
+        backgroundColor: ['#10b981','#6366f1','#3b82f6','#8b5cf6','#f59e0b','#f97316'],
+        borderColor: '#111827',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#8892a4', font: { size: 11 }, padding: 12 } }
+      }
+    }
+  });
 });
+
+function initOverviewCharts() {
+  if (overviewChartsInit) return;
+  overviewChartsInit = true;
+
+  const catCtx = document.getElementById('catChart').getContext('2d');
+  new Chart(catCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Politics', 'Sports', 'AI/Tech', 'Finance', 'Crypto', 'Culture/Geo'],
+      datasets: [{
+        data: [982.7, 85, 10.7, 24.3, 3.1, 23.9],
+        backgroundColor: ['#6366f1','#10b981','#8b5cf6','#3b82f6','#f97316','#f59e0b'],
+        borderColor: '#111827',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#8892a4', font: { size: 11 }, padding: 10 } }
+      }
+    }
+  });
+
+  const volCtx = document.getElementById('volChart').getContext('2d');
+  new Chart(volCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Dem Primary 2028','Kevin Warsh','Alien Disc','La Liga','MLB WS','AI Best Apr','Elon Tweets','Marine Le Pen'],
+      datasets: [{
+        label: 'Volume ($M)',
+        data: [982.7, 21.1, 23.9, 9.96, 9.97, 4.0, 0.1, 9.98],
+        backgroundColor: '#6366f1',
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1e2a4a' }, ticks: { color: '#8892a4' } },
+        y: { grid: { color: '#1e2a4a' }, ticks: { color: '#8892a4', font: { size: 10 } } }
+      }
+    }
+  });
+}
 </script>
 </body>
 </html>
