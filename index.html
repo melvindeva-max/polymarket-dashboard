@@ -8,422 +8,578 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0e17;--card:#111827;--border:#1e2a4a;--text:#e1e5ee;--dim:#8892a4;--accent:#6366f1;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.5}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh}
 .header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.header h1{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--accent),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header .meta{font-size:.8rem;color:var(--dim)}
-.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 24px;overflow-x:auto}
-.tab{padding:12px 20px;cursor:pointer;font-size:.85rem;font-weight:500;color:var(--dim);border-bottom:2px solid transparent;white-space:nowrap;transition:.2s}
-.tab:hover{color:var(--text)}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.header h1{font-size:1.5rem;background:linear-gradient(135deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .meta{color:var(--dim);font-size:.85rem}
+.tabs{display:flex;gap:4px;padding:12px 24px;border-bottom:1px solid var(--border);overflow-x:auto}
+.tab{padding:10px 20px;border-radius:8px;cursor:pointer;font-size:.9rem;color:var(--dim);background:transparent;border:1px solid transparent;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--text);background:rgba(99,102,241,.1)}
+.tab.active{color:#fff;background:var(--accent);border-color:var(--accent)}
 .tab.pulse{animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,.4)}50%{box-shadow:0 0 12px 4px rgba(99,102,241,.2)}}
-.container{max-width:1400px;margin:0 auto;padding:24px}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.grid{display:grid;gap:16px}
-.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-.card h3{font-size:.95rem;margin-bottom:12px;color:var(--text)}
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
-.stat .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);margin-bottom:4px}
-.stat .value{font-size:1.5rem;font-weight:700}
-.stat .value.green{color:var(--green)}.stat .value.red{color:var(--red)}.stat .value.blue{color:var(--blue)}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600;text-transform:uppercase}
-.badge.buy{background:rgba(16,185,129,.15);color:var(--green)}
-.badge.sell{background:rgba(239,68,68,.15);color:var(--red)}
-.badge.avoid{background:rgba(245,158,11,.15);color:var(--yellow)}
-.badge.resolved{background:rgba(99,102,241,.15);color:var(--accent)}
-.conf-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.1);margin-top:8px;overflow:hidden}
-.conf-bar .fill{height:100%;border-radius:3px;transition:width .5s}
-.risk-dots span{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px}
-table{width:100%;border-collapse:collapse;font-size:.82rem}
-th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--dim);font-weight:500;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
-td{padding:10px 12px;border-bottom:1px solid rgba(30,42,74,.4)}
-tr:hover td{background:rgba(99,102,241,.04)}
-.pos-table td:nth-child(5),.pos-table td:nth-child(6){font-weight:600}
-.chart-wrap{position:relative;max-width:350px;margin:0 auto}
-.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.filter-bar select,.filter-bar input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:.82rem}
-.checklist label{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(30,42,74,.3);font-size:.85rem;cursor:pointer}
-.checklist input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
-.avoid-card{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px;margin-bottom:10px}
-.avoid-card .title{font-weight:600;font-size:.9rem;margin-bottom:4px}
-.avoid-card .reason{font-size:.8rem;color:var(--dim)}
-.disclaimer{text-align:center;padding:24px;font-size:.72rem;color:var(--dim);border-top:1px solid var(--border);margin-top:40px}
-.ev-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600}
-.ev-tag.pos{background:rgba(16,185,129,.15);color:var(--green)}
-.ev-tag.neg{background:rgba(239,68,68,.15);color:var(--red)}
-.rec-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;transition:transform .15s}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.4)}50%{box-shadow:0 0 0 8px rgba(16,185,129,0)}}
+.tab.pulse.active{background:var(--green);border-color:var(--green)}
+.content{padding:24px;max-width:1400px;margin:0 auto}
+.panel{display:none}.panel.active{display:block}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.stat-card .label{color:var(--dim);font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.stat-card .value{font-size:1.6rem;font-weight:700}
+.stat-card .change{font-size:.85rem;margin-top:4px}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.section-title{font-size:1.2rem;font-weight:600;margin:28px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.portfolio-table{width:100%;border-collapse:collapse;margin-bottom:24px}
+.portfolio-table th{text-align:left;padding:10px 12px;color:var(--dim);font-size:.8rem;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.portfolio-table td{padding:10px 12px;border-bottom:1px solid rgba(30,42,74,.5);font-size:.9rem}
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:24px}
+.rec-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;transition:transform .2s}
 .rec-card:hover{transform:translateY(-2px)}
-.rec-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
-.rec-title{font-size:.95rem;font-weight:600}
-.rec-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--dim);margin-bottom:8px}
-.rec-thesis{font-size:.82rem;color:var(--dim);margin-bottom:10px}
-.rec-numbers{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem}
-.rec-numbers span{display:flex;align-items:center;gap:4px}
-.section-title{font-size:1.1rem;font-weight:600;margin:28px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.opp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
-.opp-card .q{font-weight:600;font-size:.9rem;margin-bottom:6px}
-.opp-card .price{font-size:1.3rem;font-weight:700;color:var(--accent)}
-.opp-card .details{font-size:.78rem;color:var(--dim);margin-top:6px}
-.tip-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px}
-.tip-card h4{color:var(--accent);margin-bottom:8px}
-.tip-card p{font-size:.85rem;color:var(--dim)}
-@media(max-width:600px){.container{padding:12px}.header{padding:12px 16px}.tabs{padding:0 12px}.stat .value{font-size:1.1rem}}
+.badge{position:absolute;top:12px;right:12px;padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:700;text-transform:uppercase}
+.badge.buy{background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.badge.sell{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.badge.avoid{background:rgba(245,158,11,.15);color:var(--yellow);border:1px solid rgba(245,158,11,.3)}
+.rec-card h3{font-size:1rem;margin-bottom:8px;padding-right:60px}
+.rec-meta{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0;font-size:.82rem;color:var(--dim)}
+.rec-meta span{display:flex;align-items:center;gap:4px}
+.conf-bar{height:6px;background:rgba(99,102,241,.2);border-radius:3px;margin:10px 0;overflow:hidden}
+.conf-fill{height:100%;border-radius:3px;background:var(--accent);transition:width .5s}
+.thesis{font-size:.85rem;color:var(--dim);line-height:1.5;margin:8px 0}
+.risk-dots{display:flex;gap:3px}
+.risk-dot{width:8px;height:8px;border-radius:50%;background:rgba(99,102,241,.3)}
+.risk-dot.filled{background:var(--yellow)}
+.ev-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.78rem;font-weight:600}
+.ev-pos{background:rgba(16,185,129,.15);color:var(--green)}
+.ev-neg{background:rgba(239,68,68,.15);color:var(--red)}
+.avoid-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.avoid-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.avoid-card h4{font-size:.9rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.avoid-card p{font-size:.82rem;color:var(--dim);line-height:1.4}
+.chart-container{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:768px){.chart-row{grid-template-columns:1fr}}
+.checklist{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+.check-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(30,42,74,.3);font-size:.9rem}
+.check-item:last-child{border:none}
+.check-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+.check-item.done{text-decoration:line-through;color:var(--dim)}
+.market-table{width:100%;border-collapse:collapse}
+.market-table th{text-align:left;padding:10px 12px;color:var(--dim);font-size:.8rem;text-transform:uppercase;border-bottom:1px solid var(--border);cursor:pointer}
+.market-table th:hover{color:var(--text)}
+.market-table td{padding:10px 12px;border-bottom:1px solid rgba(30,42,74,.3);font-size:.88rem}
+.market-table tr:hover{background:rgba(99,102,241,.05)}
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;font-size:.82rem;transition:all .2s}
+.filter-btn:hover,.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.opp-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:12px}
+.opp-card h3{font-size:.95rem;margin-bottom:6px}
+.opp-meta{font-size:.82rem;color:var(--dim);display:flex;gap:16px;flex-wrap:wrap}
+.strategy-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.strategy-section h3{font-size:1.05rem;margin-bottom:12px;color:var(--accent)}
+.strategy-section p,.strategy-section li{font-size:.9rem;line-height:1.6;color:var(--dim)}
+.strategy-section ul{padding-left:20px;margin:8px 0}
+.strategy-section li{margin-bottom:6px}
+.disclaimer{text-align:center;padding:24px;color:var(--dim);font-size:.78rem;border-top:1px solid var(--border);margin-top:40px}
+.price-tag{font-weight:600;font-size:1.1rem}
+.alloc-tag{background:rgba(99,102,241,.1);color:var(--accent);padding:2px 8px;border-radius:4px;font-weight:600;font-size:.85rem}
 </style>
 </head>
 <body>
 <div class="header">
-<div><h1>Polymarket Scout Dashboard</h1><div class="meta">Live prediction market intelligence & trade signals</div></div>
-<div class="meta" id="lastUpdated">Last updated: April 6, 2026 ‚Äî Auto-refresh</div>
+<div>
+<h1>Polymarket Scout Dashboard</h1>
+<div class="meta">Last updated: April 6, 2026 &bull; Live market data &bull; Auto-refreshed</div>
 </div>
-<div class="tabs" id="tabBar">
-<div class="tab active pulse" data-tab="recs">Recommendations</div>
-<div class="tab" data-tab="overview">Overview</div>
-<div class="tab" data-tab="opps">Opportunities</div>
-<div class="tab" data-tab="markets">All Markets</div>
-<div class="tab" data-tab="strategy">Strategy Guide</div>
+<div style="text-align:right">
+<div style="font-size:.85rem;color:var(--dim)">Portfolio Value</div>
+<div style="font-size:1.4rem;font-weight:700" id="headerValue">$72.01</div>
 </div>
-<div class="container">
+</div>
 
-<!-- TAB 1: RECOMMENDATIONS -->
-<div class="tab-content active" id="recs">
-<div class="section-title">Portfolio Tracker</div>
-<div class="stat-row">
-<div class="stat"><div class="label">Portfolio Value</div><div class="value green">$44.55</div></div>
-<div class="stat"><div class="label">Available Cash</div><div class="value blue">$28.22</div></div>
-<div class="stat"><div class="label">Total Invested</div><div class="value">$51.32</div></div>
-<div class="stat"><div class="label">Total P/L</div><div class="value green">+$7.23</div></div>
-<div class="stat"><div class="label">ROI</div><div class="value green">+14.1%</div></div>
+<div class="tabs">
+<div class="tab pulse active" onclick="switchTab(0)">&#x1f7e2; Recommendations</div>
+<div class="tab" onclick="switchTab(1)">Overview</div>
+<div class="tab" onclick="switchTab(2)">Opportunities</div>
+<div class="tab" onclick="switchTab(3)">All Markets</div>
+<div class="tab" onclick="switchTab(4)">Strategy Guide</div>
 </div>
-<div class="card" style="margin-bottom:24px;overflow-x:auto">
-<h3>Current Positions</h3>
-<table class="pos-table">
-<thead><tr><th>Position</th><th>Shares</th><th>Avg Cost</th><th>Current</th><th>Value</th><th>P/L</th><th>Status</th></tr></thead>
+
+<div class="content">
+
+<!-- ==================== TAB 0: RECOMMENDATIONS ==================== -->
+<div class="panel active" id="panel0">
+
+<div class="section-title">Portfolio Tracker</div>
+<div class="stats-row">
+<div class="stat-card">
+<div class="label">Total Invested</div>
+<div class="value">$51.32</div>
+</div>
+<div class="stat-card">
+<div class="label">Current Value</div>
+<div class="value">$43.79</div>
+</div>
+<div class="stat-card">
+<div class="label">Total P/L</div>
+<div class="value neg">-$7.53</div>
+<div class="change neg">-14.7%</div>
+</div>
+<div class="stat-card">
+<div class="label">Available Cash</div>
+<div class="value" style="color:var(--accent)">$28.22</div>
+</div>
+</div>
+
+<table class="portfolio-table">
+<thead><tr><th>Position</th><th>Shares</th><th>Avg Cost</th><th>Current</th><th>Value</th><th>Invested</th><th>P/L</th></tr></thead>
 <tbody>
-<tr><td>Barcelona La Liga YES</td><td>21.1</td><td>76¬¢</td><td>$1.00</td><td style="color:var(--green)">$21.10</td><td style="color:var(--green)">+$5.10</td><td><span class="badge resolved">Resolved ‚úì</span></td></tr>
-<tr><td>Arsenal EPL YES</td><td>16.9</td><td>89¬¢</td><td>$0.00</td><td style="color:var(--red)">$0.00</td><td style="color:var(--red)">‚àí$15.00</td><td><span class="badge resolved">Resolved ‚úó</span></td></tr>
-<tr><td>SGA NBA MVP YES</td><td>14.1</td><td>85¬¢</td><td>$1.00</td><td style="color:var(--green)">$14.12</td><td style="color:var(--green)">+$2.12</td><td><span class="badge resolved">Resolved ‚úì</span></td></tr>
-<tr><td>Claude Opus 4.6 Top AI YES</td><td>9.4</td><td>88.5¬¢</td><td>98¬¢</td><td style="color:var(--green)">$9.21</td><td style="color:var(--green)">+$0.89</td><td><span class="badge buy">Active</span></td></tr>
+<tr>
+<td><strong>Barcelona La Liga YES</strong></td>
+<td>21.1</td>
+<td>76.0&cent;</td>
+<td style="color:var(--green);font-weight:600">94.0&cent;</td>
+<td>$19.83</td>
+<td>$16.00</td>
+<td class="pos">+$3.83 (+23.9%)</td>
+</tr>
+<tr>
+<td><strong>Arsenal EPL YES</strong></td>
+<td>16.9</td>
+<td>89.0&cent;</td>
+<td style="color:var(--red);font-weight:600">47.0&cent;</td>
+<td>$7.94</td>
+<td>$15.00</td>
+<td class="neg">-$7.06 (-47.1%)</td>
+</tr>
+<tr>
+<td><strong>SGA NBA MVP YES</strong></td>
+<td>14.1</td>
+<td>85.0&cent;</td>
+<td style="color:var(--red);font-weight:600">62.0&cent;</td>
+<td>$8.74</td>
+<td>$12.00</td>
+<td class="neg">-$3.26 (-27.2%)</td>
+</tr>
+<tr>
+<td><strong>Claude Opus 4.6 Top AI YES</strong></td>
+<td>9.4</td>
+<td>88.5&cent;</td>
+<td style="color:var(--red);font-weight:600">77.0&cent;</td>
+<td>$7.24</td>
+<td>$8.32</td>
+<td class="neg">-$1.08 (-13.0%)</td>
+</tr>
 </tbody>
 </table>
-<div style="font-size:.75rem;color:var(--dim);margin-top:10px">* Barcelona La Liga, Arsenal EPL, and SGA MVP markets have resolved. Payouts reflected in available cash. Claude Opus resolves April 10.</div>
+<div style="font-size:.8rem;color:var(--dim);margin-bottom:24px">Note: Barcelona La Liga position is strong at 94&cent;. Arsenal EPL and SGA MVP have declined &mdash; consider holding to resolution or cutting losses. Claude Opus position is underwater but has time to recover.</div>
+
+<div class="section-title">&#x1f4a1; New Trade Recommendations (~$28.22 Budget)</div>
+<div class="rec-grid" id="recGrid"></div>
+
+<div class="chart-container" style="max-width:500px">
+<h3 style="margin-bottom:12px;font-size:1rem">Allocation Breakdown</h3>
+<canvas id="allocChart" height="260"></canvas>
 </div>
 
-<div class="section-title">New Recommendations</div>
-<div id="recCards">
+<div class="section-title">&#x2705; Execution Checklist</div>
+<div class="checklist" id="checklist"></div>
 
-<div class="rec-card">
-<div class="rec-header"><div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">Democrats Win House 2026</span></div><div class="ev-tag pos">EV +$0.86</div></div>
-<div class="rec-meta"><span>Price: 89¬¢</span><span>Allocation: $8.00</span><span>Resolves: Nov 3, 2026</span><span class="risk-dots">Risk: <span style="background:var(--green)"></span></span></div>
-<div class="rec-thesis">Historical midterm patterns strongly favor the opposition party. Anti-incumbent sentiment remains elevated with approval ratings underwater. Democratic enthusiasm metrics tracking well above 2022 levels.</div>
-<div class="rec-numbers">
-<span style="color:var(--green)">‚úì Win: $8.99 (+$0.99)</span>
-<span style="color:var(--red)">‚úó Lose: ‚àí$8.00</span>
-<span>Confidence: 92/100</span>
-</div>
-<div class="conf-bar"><div class="fill" style="width:92%;background:var(--green)"></div></div>
-</div>
-
-<div class="rec-card">
-<div class="rec-header"><div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">Anthropic Best AI Model End of June</span></div><div class="ev-tag pos">EV +$1.64</div></div>
-<div class="rec-meta"><span>Price: 66¬¢</span><span>Allocation: $6.00</span><span>Resolves: Jun 30, 2026</span><span class="risk-dots">Risk: <span style="background:var(--yellow)"></span><span style="background:var(--yellow)"></span></span></div>
-<div class="rec-thesis">Anthropic's Claude Opus 4.6 dominates current benchmarks at 98% for April. Competitors (OpenAI, Google) unlikely to leapfrog within 3 months. 66¬¢ significantly underprices the ~80% true probability.</div>
-<div class="rec-numbers">
-<span style="color:var(--green)">‚úì Win: $9.09 (+$3.09)</span>
-<span style="color:var(--red)">‚úó Lose: ‚àí$6.00</span>
-<span>Confidence: 78/100</span>
-</div>
-<div class="conf-bar"><div class="fill" style="width:78%;background:var(--accent)"></div></div>
-</div>
-
-<div class="rec-card">
-<div class="rec-header"><div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">AI Wins IMO Gold Medal 2026</span></div><div class="ev-tag pos">EV +$0.24</div></div>
-<div class="rec-meta"><span>Price: 80¬¢</span><span>Allocation: $4.00</span><span>Resolves: Jul 2026</span><span class="risk-dots">Risk: <span style="background:var(--yellow)"></span><span style="background:var(--yellow)"></span></span></div>
-<div class="rec-thesis">AI math capabilities have been surging. DeepMind's AlphaProof and OpenAI's o-series models are closing in on IMO-level performance. Multiple teams targeting this milestone in 2026.</div>
-<div class="rec-numbers">
-<span style="color:var(--green)">‚úì Win: $5.00 (+$1.00)</span>
-<span style="color:var(--red)">‚úó Lose: ‚àí$4.00</span>
-<span>Confidence: 82/100</span>
-</div>
-<div class="conf-bar"><div class="fill" style="width:82%;background:var(--accent)"></div></div>
-</div>
-
-<div class="rec-card">
-<div class="rec-header"><div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">South Korea Local Elections ‚Äî DP Wins</span></div><div class="ev-tag pos">EV +$0.05</div></div>
-<div class="rec-meta"><span>Price: 96¬¢</span><span>Allocation: $4.00</span><span>Resolves: Jun 2026</span><span class="risk-dots">Risk: <span style="background:var(--green)"></span></span></div>
-<div class="rec-thesis">Democratic Party of Korea has commanding polling lead following political upheaval. Opposition deeply fractured. Market consensus and polling align at 96%+ probability ‚Äî safe yield play.</div>
-<div class="rec-numbers">
-<span style="color:var(--green)">‚úì Win: $4.17 (+$0.17)</span>
-<span style="color:var(--red)">‚úó Lose: ‚àí$4.00</span>
-<span>Confidence: 97/100</span>
-</div>
-<div class="conf-bar"><div class="fill" style="width:97%;background:var(--green)"></div></div>
-</div>
-
-<div class="rec-card">
-<div class="rec-header"><div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">Another Crypto Hack Over $100M by Dec 31</span></div><div class="ev-tag pos">EV +$0.57</div></div>
-<div class="rec-meta"><span>Price: 63¬¢</span><span>Allocation: $3.00</span><span>Resolves: Dec 31, 2026</span><span class="risk-dots">Risk: <span style="background:var(--yellow)"></span><span style="background:var(--yellow)"></span></span></div>
-<div class="rec-thesis">DeFi exploits exceeding $100M have occurred multiple times annually in recent years. Growing TVL in 2026 increases attack surface. 63¬¢ underprices the base rate of major hacks.</div>
-<div class="rec-numbers">
-<span style="color:var(--green)">‚úì Win: $4.76 (+$1.76)</span>
-<span style="color:var(--red)">‚úó Lose: ‚àí$3.00</span>
-<span>Confidence: 75/100</span>
-</div>
-<div class="conf-bar"><div class="fill" style="width:75%;background:var(--accent)"></div></div>
-</div>
-
-<div class="rec-card">
-<div class="rec-header"><div><span class="badge buy">BUY YES</span> <span class="rec-title" style="margin-left:8px">Monero Hits $1,000 in 2026</span></div><div class="ev-tag pos">EV +$0.53</div></div>
-<div class="rec-meta"><span>Price: 17¬¢</span><span>Allocation: $3.00</span><span>Resolves: Dec 31, 2026</span><span class="risk-dots">Risk: <span style="background:var(--red)"></span><span style="background:var(--red)"></span><span style="background:var(--red)"></span></span></div>
-<div class="rec-thesis">Speculative longshot with outsized upside. Privacy coin narrative could strengthen amid regulatory crackdowns. If crypto enters a parabolic run, Monero has historically outperformed. 6:1 payout ratio makes this worthwhile at small size.</div>
-<div class="rec-numbers">
-<span style="color:var(--green)">‚úì Win: $17.65 (+$14.65)</span>
-<span style="color:var(--red)">‚úó Lose: ‚àí$3.00</span>
-<span>Confidence: 22/100</span>
-</div>
-<div class="conf-bar"><div class="fill" style="width:22%;background:var(--red)"></div></div>
-</div>
+<div class="section-title">&#x26a0;&#xfe0f; Markets to Avoid</div>
+<div class="avoid-grid" id="avoidGrid"></div>
 
 </div>
 
-<div style="display:flex;gap:16px;flex-wrap:wrap;margin:24px 0">
-<div class="card" style="flex:1;min-width:280px">
-<h3>Allocation Breakdown</h3>
-<div class="chart-wrap"><canvas id="allocChart"></canvas></div>
+<!-- ==================== TAB 1: OVERVIEW ==================== -->
+<div class="panel" id="panel1">
+<div class="stats-row">
+<div class="stat-card"><div class="label">Active Markets Tracked</div><div class="value">50+</div></div>
+<div class="stat-card"><div class="label">Top Event Volume</div><div class="value">$984.6M</div><div class="change" style="color:var(--dim)">Dem Nominee 2028</div></div>
+<div class="stat-card"><div class="label">Categories</div><div class="value">8</div></div>
+<div class="stat-card"><div class="label">Avg Liquidity</div><div class="value">$125K</div></div>
 </div>
-<div class="card" style="flex:1;min-width:280px">
-<h3>Risk Distribution</h3>
-<div class="chart-wrap"><canvas id="riskChart"></canvas></div>
-</div>
-</div>
-
-<div class="section-title">Execution Checklist</div>
-<div class="card">
-<div class="checklist">
-<label><input type="checkbox"> BUY Democrats Win House 2026 YES ‚Äî $8.00 @ 89¬¢</label>
-<label><input type="checkbox"> BUY Anthropic Best AI Model June YES ‚Äî $6.00 @ 66¬¢</label>
-<label><input type="checkbox"> BUY AI Wins IMO Gold 2026 YES ‚Äî $4.00 @ 80¬¢</label>
-<label><input type="checkbox"> BUY South Korea DP Wins YES ‚Äî $4.00 @ 96¬¢</label>
-<label><input type="checkbox"> BUY Crypto Hack $100M+ YES ‚Äî $3.00 @ 63¬¢</label>
-<label><input type="checkbox"> BUY Monero $1000 YES ‚Äî $3.00 @ 17¬¢</label>
-</div>
-<div style="font-size:.78rem;color:var(--dim);margin-top:10px">Total: $28.00 / $28.22 available</div>
-</div>
-
-<div class="section-title">Markets to Avoid</div>
-<div class="avoid-card"><div class="title"><span class="badge avoid">AVOID</span> Jesus Christ Returns Before GTA VI ‚Äî 49% YES</div><div class="reason">Pure meme market. $10.9M volume but fundamentally untradeable ‚Äî resolution criteria is absurd. Massive spread and manipulation risk.</div></div>
-<div class="avoid-card"><div class="title"><span class="badge avoid">AVOID</span> Bitcoin Hits $1M Before GTA VI ‚Äî 49% YES</div><div class="reason">Another GTA VI meme market with joke pricing. BTC would need ~12x from current levels by Nov 2026. The ~50% price reflects meme dynamics, not real probability.</div></div>
-<div class="avoid-card"><div class="title"><span class="badge avoid">AVOID</span> Trump Out as President by April 30 ‚Äî 2% YES</div><div class="reason">Extremely unlikely in 24-day window. Even at 2¬¢, the EV is negative. You'd tie up capital for negligible return on NO side, or near-certain loss on YES.</div></div>
-<div class="avoid-card"><div class="title"><span class="badge avoid">AVOID</span> GTA VI Released Before June 2026 ‚Äî 1% YES</div><div class="reason">Rockstar confirmed November 2026 release. 1¬¢ YES is a donation. NO at 99¬¢ ties up capital for months with negligible upside.</div></div>
-<div class="avoid-card"><div class="title"><span class="badge avoid">AVOID</span> Inflation Above 3% in 2026 ‚Äî 99% YES</div><div class="reason">Already priced to perfection at 99¬¢. Zero edge. You'd earn 1¬¢/share in the best case. Any capital allocated here is dead money.</div></div>
-</div>
-
-<!-- TAB 2: OVERVIEW -->
-<div class="tab-content" id="overview">
-<div class="stat-row">
-<div class="stat"><div class="label">Active Markets</div><div class="value blue">12,000+</div></div>
-<div class="stat"><div class="label">24h Volume</div><div class="value green">$42M+</div></div>
-<div class="stat"><div class="label">Top Event Volume</div><div class="value">$984M</div></div>
-<div class="stat"><div class="label">Categories</div><div class="value">8</div></div>
-</div>
-<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px">
-<div class="card" style="flex:1;min-width:300px"><h3>Volume by Category</h3><div class="chart-wrap"><canvas id="catChart"></canvas></div></div>
-<div class="card" style="flex:1;min-width:300px"><h3>Top 8 Events by Volume</h3><canvas id="topEventsChart" style="max-height:300px"></canvas></div>
+<div class="chart-row">
+<div class="chart-container"><h3 style="margin-bottom:12px;font-size:1rem">Volume by Category</h3><canvas id="catChart" height="280"></canvas></div>
+<div class="chart-container"><h3 style="margin-bottom:12px;font-size:1rem">Top 8 Markets by Volume</h3><canvas id="topChart" height="280"></canvas></div>
 </div>
 <div class="section-title">Trending Markets</div>
-<div class="grid g3">
-<div class="opp-card"><div class="q">Democratic Presidential Nominee 2028</div><div class="price">Ossoff 7¬¢ | Buttigieg 4¬¢</div><div class="details">$984M volume ¬∑ Resolves Nov 2028</div></div>
-<div class="opp-card"><div class="q">Republican Presidential Nominee 2028</div><div class="price">JD Vance 37¬¢</div><div class="details">$521M volume ¬∑ Resolves Nov 2028</div></div>
-<div class="opp-card"><div class="q">2026 FIFA World Cup Winner</div><div class="price">Spain 16¬¢</div><div class="details">$507M volume ¬∑ Resolves Jul 2026</div></div>
-<div class="opp-card"><div class="q">Presidential Election Winner 2028</div><div class="price">JD Vance 18¬¢</div><div class="details">$492M volume ¬∑ Resolves Nov 2028</div></div>
-<div class="opp-card"><div class="q">2026 NBA Champion</div><div class="price">OKC Thunder 39¬¢</div><div class="details">$230M volume ¬∑ Resolves Jun 2026</div></div>
-<div class="opp-card"><div class="q">Netanyahu Out By...?</div><div class="price">40% by Dec 31</div><div class="details">$114M volume ¬∑ Multiple dates</div></div>
-<div class="opp-card"><div class="q">US √ó Iran Ceasefire</div><div class="price">75% by Dec 31</div><div class="details">$94M volume ¬∑ Geopolitics</div></div>
-<div class="opp-card"><div class="q">F1 Drivers' Champion</div><div class="price">George Russell 44¬¢</div><div class="details">$83M volume ¬∑ Resolves Dec 2026</div></div>
-<div class="opp-card"><div class="q">Fed Decision April</div><div class="price">No Change 98¬¢</div><div class="details">$55M volume ¬∑ Resolves May 2026</div></div>
-</div>
+<div id="trendingList"></div>
 </div>
 
-<!-- TAB 3: OPPORTUNITIES -->
-<div class="tab-content" id="opps">
-<div class="section-title">Filtered Opportunities</div>
-<div class="filter-bar">
-<select id="filterCat"><option value="all">All Categories</option><option value="politics">Politics</option><option value="crypto">Crypto</option><option value="ai">AI</option><option value="sports">Sports</option><option value="finance">Finance</option><option value="culture">Culture</option></select>
-<select id="filterRisk"><option value="all">All Risk Levels</option><option value="1">Low Risk</option><option value="2">Medium Risk</option><option value="3">High Risk</option></select>
-<input type="text" id="filterSearch" placeholder="Search markets...">
+<!-- ==================== TAB 2: OPPORTUNITIES ==================== -->
+<div class="panel" id="panel2">
+<div class="filter-row">
+<button class="filter-btn active" onclick="filterOpp('all',this)">All</button>
+<button class="filter-btn" onclick="filterOpp('politics',this)">Politics</button>
+<button class="filter-btn" onclick="filterOpp('sports',this)">Sports</button>
+<button class="filter-btn" onclick="filterOpp('crypto',this)">Crypto</button>
+<button class="filter-btn" onclick="filterOpp('culture',this)">Culture</button>
+<button class="filter-btn" onclick="filterOpp('finance',this)">Finance</button>
 </div>
-<div class="grid g3" id="oppGrid">
-<div class="opp-card" data-cat="ai" data-risk="2"><div class="q">Anthropic Best AI Model ‚Äî June</div><div class="price">66¬¢ YES</div><div class="details">Category: AI ¬∑ Risk: 2 ¬∑ $3M vol ¬∑ Resolves Jun 30</div></div>
-<div class="opp-card" data-cat="politics" data-risk="1"><div class="q">Democrats Win House 2026</div><div class="price">89¬¢ YES</div><div class="details">Category: Politics ¬∑ Risk: 1 ¬∑ $4M vol ¬∑ Resolves Nov 2026</div></div>
-<div class="opp-card" data-cat="politics" data-risk="1"><div class="q">South Korea DP Wins Local Elections</div><div class="price">96¬¢ YES</div><div class="details">Category: Politics ¬∑ Risk: 1 ¬∑ $2M vol ¬∑ Resolves Jun 2026</div></div>
-<div class="opp-card" data-cat="politics" data-risk="2"><div class="q">Democrats Win Senate 2026</div><div class="price">52¬¢ YES</div><div class="details">Category: Politics ¬∑ Risk: 2 ¬∑ $2M vol ¬∑ Resolves Nov 2026</div></div>
-<div class="opp-card" data-cat="crypto" data-risk="2"><div class="q">Crypto Hack Over $100M by Dec 31</div><div class="price">63¬¢ YES</div><div class="details">Category: Crypto ¬∑ Risk: 2 ¬∑ $8.1K vol ¬∑ Resolves Dec 2026</div></div>
-<div class="opp-card" data-cat="crypto" data-risk="3"><div class="q">Monero Hits $1,000 in 2026</div><div class="price">17¬¢ YES</div><div class="details">Category: Crypto ¬∑ Risk: 3 ¬∑ $87.8K vol ¬∑ Resolves Dec 2026</div></div>
-<div class="opp-card" data-cat="ai" data-risk="2"><div class="q">AI Wins IMO Gold Medal 2026</div><div class="price">80¬¢ YES</div><div class="details">Category: AI ¬∑ Risk: 2 ¬∑ High vol ¬∑ Resolves Jul 2026</div></div>
-<div class="opp-card" data-cat="ai" data-risk="1"><div class="q">Anthropic Best AI Model ‚Äî April</div><div class="price">91¬¢ YES</div><div class="details">Category: AI ¬∑ Risk: 1 ¬∑ $4M vol ¬∑ Resolves Apr 30</div></div>
-<div class="opp-card" data-cat="politics" data-risk="2"><div class="q">Berlin State Election ‚Äî CDU Wins</div><div class="price">55¬¢ YES</div><div class="details">Category: Politics ¬∑ Risk: 2 ¬∑ $3M vol ¬∑ Resolves 2026</div></div>
-<div class="opp-card" data-cat="finance" data-risk="2"><div class="q">S&P 500 Close Below $6,000 End 2026</div><div class="price">43¬¢ YES</div><div class="details">Category: Finance ¬∑ Risk: 2 ¬∑ $17.1K vol ¬∑ Resolves Dec 2026</div></div>
-<div class="opp-card" data-cat="finance" data-risk="2"><div class="q">Nasdaq Round-the-Clock Trading by June 30</div><div class="price">13¬¢ YES</div><div class="details">Category: Finance ¬∑ Risk: 2 ¬∑ $38.8K vol ¬∑ Resolves Jun 2026</div></div>
-<div class="opp-card" data-cat="crypto" data-risk="2"><div class="q">Kraken IPO by Dec 31, 2026</div><div class="price">29¬¢ YES</div><div class="details">Category: Crypto ¬∑ Risk: 2 ¬∑ $366K vol ¬∑ Resolves Dec 2026</div></div>
-<div class="opp-card" data-cat="politics" data-risk="2"><div class="q">Sachsen-Anhalt Election ‚Äî AfD Wins</div><div class="price">89¬¢ YES</div><div class="details">Category: Politics ¬∑ Risk: 2 ¬∑ $622K vol ¬∑ Resolves 2026</div></div>
-<div class="opp-card" data-cat="culture" data-risk="2"><div class="q">New Rihanna Album Before GTA VI</div><div class="price">64¬¢ YES</div><div class="details">Category: Culture ¬∑ Risk: 2 ¬∑ $681K vol ¬∑ Resolves Jul 2026</div></div>
-<div class="opp-card" data-cat="sports" data-risk="2"><div class="q">OKC Thunder ‚Äî NBA Champion</div><div class="price">39¬¢ YES</div><div class="details">Category: Sports ¬∑ Risk: 2 ¬∑ $230M vol ¬∑ Resolves Jun 2026</div></div>
-<div class="opp-card" data-cat="finance" data-risk="2"><div class="q">US Crude Oil Reserves Fall by May 1</div><div class="price">20¬¢ YES</div><div class="details">Category: Finance ¬∑ Risk: 2 ¬∑ $284K vol ¬∑ Resolves May 2026</div></div>
-<div class="opp-card" data-cat="politics" data-risk="1"><div class="q">Fed No Change ‚Äî April Meeting</div><div class="price">98¬¢ YES</div><div class="details">Category: Finance ¬∑ Risk: 1 ¬∑ $55M vol ¬∑ Resolves May 2026</div></div>
-<div class="opp-card" data-cat="crypto" data-risk="2"><div class="q">Hyperliquid Listed on Binance 2026</div><div class="price">33¬¢ YES</div><div class="details">Category: Crypto ¬∑ Risk: 2 ¬∑ $234K vol ¬∑ Resolves Dec 2026</div></div>
-</div>
+<div id="oppList"></div>
 </div>
 
-<!-- TAB 4: ALL MARKETS -->
-<div class="tab-content" id="markets">
-<div class="section-title">All Tracked Markets</div>
-<div class="filter-bar">
-<input type="text" id="marketSearch" placeholder="Search markets..." style="min-width:250px">
-<select id="marketSort">
-<option value="volume">Sort by Volume</option>
-<option value="price">Sort by Price</option>
-<option value="date">Sort by End Date</option>
-</select>
+<!-- ==================== TAB 3: ALL MARKETS ==================== -->
+<div class="panel" id="panel3">
+<div class="filter-row">
+<button class="filter-btn active" onclick="filterMkt('all',this)">All</button>
+<button class="filter-btn" onclick="filterMkt('politics',this)">Politics</button>
+<button class="filter-btn" onclick="filterMkt('sports',this)">Sports</button>
+<button class="filter-btn" onclick="filterMkt('crypto',this)">Crypto</button>
+<button class="filter-btn" onclick="filterMkt('culture',this)">Culture</button>
+<button class="filter-btn" onclick="filterMkt('finance',this)">Finance</button>
+<button class="filter-btn" onclick="filterMkt('geopolitics',this)">Geopolitics</button>
 </div>
-<div class="card" style="overflow-x:auto">
-<table id="marketTable">
-<thead><tr><th>Market</th><th>Category</th><th>Yes Price</th><th>Volume</th><th>End Date</th><th>Signal</th></tr></thead>
-<tbody>
-<tr><td>Democratic Presidential Nominee 2028</td><td>Politics</td><td>7¬¢ (Ossoff)</td><td>$984M</td><td>Nov 2028</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Republican Presidential Nominee 2028</td><td>Politics</td><td>37¬¢ (Vance)</td><td>$521M</td><td>Nov 2028</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>2026 FIFA World Cup Winner</td><td>Sports</td><td>16¬¢ (Spain)</td><td>$507M</td><td>Jul 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Presidential Election Winner 2028</td><td>Politics</td><td>18¬¢ (Vance)</td><td>$492M</td><td>Nov 2028</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>2026 NBA Champion</td><td>Sports</td><td>39¬¢ (OKC)</td><td>$230M</td><td>Jun 2026</td><td><span class="badge buy">Opportunity</span></td></tr>
-<tr><td>Netanyahu Out By Dec 31</td><td>Politics</td><td>40¬¢</td><td>$114M</td><td>Dec 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>US √ó Iran Ceasefire by Dec 31</td><td>Politics</td><td>75¬¢</td><td>$94M</td><td>Dec 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>F1 Drivers' Champion</td><td>Sports</td><td>44¬¢ (Russell)</td><td>$83M</td><td>Dec 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Fed Decision April ‚Äî No Change</td><td>Finance</td><td>98¬¢</td><td>$55M</td><td>May 2026</td><td><span class="badge buy">Safe Yield</span></td></tr>
-<tr><td>Fed Chair Confirmation</td><td>Politics</td><td>‚Äî</td><td>$21.3M</td><td>2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>MicroStrategy Sells BTC by Jun 30</td><td>Crypto</td><td>3¬¢</td><td>$907K</td><td>Jun 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Jesus Christ Returns Before GTA VI</td><td>Culture</td><td>49¬¢</td><td>$10.9M</td><td>Jul 2026</td><td><span class="badge avoid">Avoid</span></td></tr>
-<tr><td>GTA VI Before June 2026</td><td>Culture</td><td>1¬¢</td><td>$13.2M</td><td>May 2026</td><td><span class="badge avoid">Avoid</span></td></tr>
-<tr><td>Bitcoin Hits $1M Before GTA VI</td><td>Crypto</td><td>49¬¢</td><td>$3.9M</td><td>Jul 2026</td><td><span class="badge avoid">Avoid</span></td></tr>
-<tr><td>Democrats Win House 2026</td><td>Politics</td><td>89¬¢</td><td>$4M</td><td>Nov 2026</td><td><span class="badge buy">BUY</span></td></tr>
-<tr><td>Democrats Win Senate 2026</td><td>Politics</td><td>52¬¢</td><td>$2M</td><td>Nov 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Anthropic Best AI Model June</td><td>AI</td><td>66¬¢</td><td>$3M</td><td>Jun 2026</td><td><span class="badge buy">BUY</span></td></tr>
-<tr><td>Anthropic Best AI Model April</td><td>AI</td><td>91¬¢</td><td>$4M</td><td>Apr 2026</td><td><span class="badge buy">Opportunity</span></td></tr>
-<tr><td>Claude Opus 4.6 Top AI Apr 10</td><td>AI</td><td>98¬¢</td><td>$29K</td><td>Apr 10</td><td><span class="badge buy">Held</span></td></tr>
-<tr><td>AI IMO Gold Medal 2026</td><td>AI</td><td>80¬¢</td><td>High</td><td>Jul 2026</td><td><span class="badge buy">BUY</span></td></tr>
-<tr><td>South Korea DP Wins</td><td>Politics</td><td>96¬¢</td><td>$2M</td><td>Jun 2026</td><td><span class="badge buy">BUY</span></td></tr>
-<tr><td>Crypto Hack $100M+ by Dec 31</td><td>Crypto</td><td>63¬¢</td><td>$8.1K</td><td>Dec 2026</td><td><span class="badge buy">BUY</span></td></tr>
-<tr><td>Monero Hits $1,000 in 2026</td><td>Crypto</td><td>17¬¢</td><td>$87.8K</td><td>Dec 2026</td><td><span class="badge sell">Speculative</span></td></tr>
-<tr><td>Starmer Out by Jun 30, 2026</td><td>Politics</td><td>‚Äî</td><td>$1.4M</td><td>Jun 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Berlin State Election ‚Äî CDU</td><td>Politics</td><td>55¬¢</td><td>$3M</td><td>2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Rihanna Album Before GTA VI</td><td>Culture</td><td>64¬¢</td><td>$681K</td><td>Jul 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>S&P 500 Below $6K End 2026</td><td>Finance</td><td>43¬¢</td><td>$17.1K</td><td>Dec 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Kraken IPO by Dec 31, 2026</td><td>Crypto</td><td>29¬¢</td><td>$366K</td><td>Dec 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Hyperliquid on Binance 2026</td><td>Crypto</td><td>33¬¢</td><td>$234K</td><td>Dec 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>US Invades Iran Before 2027</td><td>Politics</td><td>59¬¢</td><td>$4M</td><td>Dec 2026</td><td><span class="badge avoid">Watch</span></td></tr>
-<tr><td>Inflation Above 3% 2026</td><td>Finance</td><td>99¬¢</td><td>$399K</td><td>Dec 2026</td><td><span class="badge avoid">Avoid</span></td></tr>
-</tbody>
+<table class="market-table" id="marketTable">
+<thead><tr>
+<th onclick="sortTable(0)">Market</th>
+<th onclick="sortTable(1)">YES &cent;</th>
+<th onclick="sortTable(2)">Volume</th>
+<th onclick="sortTable(3)">End Date</th>
+<th onclick="sortTable(4)">Category</th>
+</tr></thead>
+<tbody id="marketBody"></tbody>
 </table>
 </div>
+
+<!-- ==================== TAB 4: STRATEGY GUIDE ==================== -->
+<div class="panel" id="panel4">
+<div class="strategy-section">
+<h3>Position Sizing Rules</h3>
+<ul>
+<li><strong>Kelly Criterion Lite:</strong> Never risk more than 15% of bankroll on a single bet. With $28 available, max single allocation is ~$4.20.</li>
+<li><strong>Tier Allocation:</strong> ~45% high-confidence (risk 1), ~40% medium (risk 2), ~15% speculative (risk 3).</li>
+<li><strong>Diversify Categories:</strong> No more than 40% in any single category (sports, politics, crypto, etc.).</li>
+<li><strong>Liquidity Check:</strong> Avoid markets with &lt;$5K liquidity &mdash; slippage will eat your edge.</li>
+</ul>
+</div>
+<div class="strategy-section">
+<h3>EV Calculator</h3>
+<p>Expected Value = (Prob of Win &times; Payout if Win) &minus; (Prob of Loss &times; Cost if Loss)</p>
+<p style="margin-top:8px">Example: Buy YES at 40&cent;, you believe true probability is 55%.<br>
+EV = (0.55 &times; $0.60) &minus; (0.45 &times; $0.40) = $0.33 &minus; $0.18 = <strong style="color:var(--green)">+$0.15 per share</strong></p>
+<p style="margin-top:8px">Only take bets with EV &gt; +$0.05 per share. Below that, fees and slippage erode the edge.</p>
+</div>
+<div class="strategy-section">
+<h3>Risk Management</h3>
+<ul>
+<li><strong>Stop-Loss Discipline:</strong> If a position drops 40%+ from entry and thesis is broken, sell. Don't hold hopium.</li>
+<li><strong>Take Profits:</strong> When a position hits 90&cent;+, consider selling early to lock gains vs. waiting for full resolution.</li>
+<li><strong>Correlation Risk:</strong> Your current portfolio is sports-heavy. Diversify into politics, crypto, or geopolitics.</li>
+<li><strong>Time Decay:</strong> Markets near expiry with low probability become lottery tickets. Size accordingly.</li>
+<li><strong>Resolution Risk:</strong> Some markets have ambiguous resolution criteria. Read the rules before buying.</li>
+</ul>
+</div>
+<div class="strategy-section">
+<h3>Current Portfolio Assessment</h3>
+<p>Your portfolio is <strong>concentrated in sports</strong> (3 of 4 positions). Barcelona La Liga at 94&cent; is nearly resolved &mdash; consider selling at 94&cent; to free up ~$19.83 for better EV opportunities rather than waiting for the last 6&cent; of upside.</p>
+<p style="margin-top:8px">Arsenal EPL at 47&cent; (bought at 89&cent;) is the biggest concern. If you believe Arsenal can still win, hold. Otherwise, selling now recovers $7.94 vs. potential $0.</p>
+</div>
 </div>
 
-<!-- TAB 5: STRATEGY GUIDE -->
-<div class="tab-content" id="strategy">
-<div class="section-title">Position Sizing</div>
-<div class="grid g2">
-<div class="tip-card"><h4>Kelly Criterion (Simplified)</h4><p>Optimal bet size = (edge / odds). For a market at 60¬¢ where you believe true probability is 75%: edge = 0.75 ‚àí 0.60 = 0.15, odds = 0.40 (what you lose). Kelly = 0.15/0.40 = 37.5% of bankroll. In practice, use ¬º Kelly (‚âà9%) to reduce variance.</p></div>
-<div class="tip-card"><h4>The 5% Rule</h4><p>Never allocate more than 5% of your total portfolio to a single speculative position (Risk 3). For medium-confidence plays (Risk 2), cap at 15%. Only high-confidence plays (Risk 1) should exceed 15%, and even then cap at 25%.</p></div>
-</div>
-<div class="section-title">EV Calculator</div>
-<div class="card">
-<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:16px">
-<div><label style="font-size:.75rem;color:var(--dim)">Your Probability (%)</label><br><input type="number" id="evProb" value="75" min="1" max="99" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:6px;width:100px"></div>
-<div><label style="font-size:.75rem;color:var(--dim)">Market Price (¬¢)</label><br><input type="number" id="evPrice" value="60" min="1" max="99" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:6px;width:100px"></div>
-<div><label style="font-size:.75rem;color:var(--dim)">Bet Size ($)</label><br><input type="number" id="evBet" value="10" min="1" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:6px;width:100px"></div>
-<button onclick="calcEV()" style="background:var(--accent);color:white;border:none;padding:8px 20px;border-radius:6px;cursor:pointer;font-weight:600">Calculate</button>
-</div>
-<div id="evResult" style="font-size:.9rem"></div>
-</div>
-<div class="section-title">Risk Management Tips</div>
-<div class="grid g2">
-<div class="tip-card"><h4>Diversification</h4><p>Spread across uncorrelated categories ‚Äî politics, crypto, AI, sports, culture. A crypto crash won't affect election outcomes. Aim for 5‚Äì10 active positions across at least 3 categories.</p></div>
-<div class="tip-card"><h4>Liquidity Check</h4><p>Before entering, check the order book depth. Markets with less than $5K liquidity can have wide spreads (5%+). You'll lose edge just entering and exiting. Prefer markets with $50K+ liquidity.</p></div>
-<div class="tip-card"><h4>Time Decay</h4><p>Markets near resolution date converge to 0 or 100. If you're holding a YES position at 90¬¢ with 2 weeks left, your upside is 10¬¢ but downside is 90¬¢. Consider taking profits early when your thesis has played out.</p></div>
-<div class="tip-card"><h4>Bankroll Management</h4><p>Keep 20‚Äì30% of your portfolio in cash at all times. This lets you capitalize on sudden opportunities (news events, market dislocations) without being forced to sell existing positions at a loss.</p></div>
-<div class="tip-card"><h4>Emotional Discipline</h4><p>Set entry and exit prices before placing a trade. If a position drops 30% from entry, re-evaluate your thesis objectively. If the thesis is broken, cut losses. If it still holds, consider averaging down only if you have conviction.</p></div>
-<div class="tip-card"><h4>Edge Identification</h4><p>Your edge comes from information asymmetry or better probability estimation. If you can't articulate why the market is mispriced, you don't have an edge. Never trade just because a price "feels" wrong.</p></div>
-</div>
 </div>
 
+<div class="disclaimer">
+&#x26a0;&#xfe0f; Not financial advice. All trades carry risk. Prediction markets can lose 100% of invested capital. Past performance does not indicate future results. DYOR.
 </div>
-
-<div class="disclaimer">Not financial advice. All trades carry risk. Past performance does not guarantee future results. Polymarket Scout Dashboard ‚Äî April 6, 2026.</div>
 
 <script>
-// Tab switching
-document.querySelectorAll('.tab').forEach(t=>{
-t.addEventListener('click',()=>{
-document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
-t.classList.add('active');
-document.getElementById(t.dataset.tab).classList.add('active');
+// ===================== DATA =====================
+const recommendations = [
+  {
+    action: "BUY", side: "YES",
+    title: "Kevin Warsh Confirmed as Fed Chair",
+    price: 0.962, alloc: 5.00, confidence: 92, risk: 1,
+    endDate: "2026-06-30", category: "politics",
+    thesis: "Warsh at 96Â¢ is near-certainty. Senate confirmation is progressing and no viable opposition. Lock in easy 4% return on capital with minimal risk.",
+    ifWin: "$5.20", ifLose: "$0.00", ev: "+$0.20"
+  },
+  {
+    action: "BUY", side: "YES",
+    title: "Barcelona Win 2025-26 La Liga",
+    price: 0.94, alloc: 4.00, confidence: 90, risk: 1,
+    endDate: "2026-05-30", category: "sports",
+    thesis: "Barcelona at 94Â¢ with 7 matches left and a commanding lead. Near-guaranteed resolution. Add to existing position for safe 6% return.",
+    ifWin: "$4.26", ifLose: "$0.00", ev: "+$0.14"
+  },
+  {
+    action: "BUY", side: "YES",
+    title: "Democrats Control Senate After 2026 Midterms",
+    price: 0.515, alloc: 5.00, confidence: 62, risk: 2,
+    endDate: "2026-11-03", category: "politics",
+    thesis: "Current polling shows Dems with slight edge in key races. Map favors flips in ME, NC, FL. At 51.5Â¢, slight mispricing vs. fundamentals gives positive EV.",
+    ifWin: "$9.71", ifLose: "$0.00", ev: "+$1.85"
+  },
+  {
+    action: "BUY", side: "YES",
+    title: "Ethereum Reaches $3,500 by Dec 31, 2026",
+    price: 0.335, alloc: 4.50, confidence: 50, risk: 2,
+    endDate: "2027-01-01", category: "crypto",
+    thesis: "ETH at ~$1,800 currently. With 8 months to go, a rally to $3.5K is plausible given ETF inflows and L2 adoption. 3:1 payout at 33.5Â¢ offers strong risk/reward.",
+    ifWin: "$13.43", ifLose: "$0.00", ev: "+$2.22"
+  },
+  {
+    action: "BUY", side: "YES",
+    title: "Starmer Out as UK PM by June 30, 2026",
+    price: 0.265, alloc: 3.50, confidence: 35, risk: 2,
+    endDate: "2026-06-30", category: "politics",
+    thesis: "UK political turmoil is real. Labour's approval ratings are cratering and backbench revolts are escalating. At 26.5Â¢, the payout ratio is attractive if crisis deepens.",
+    ifWin: "$13.21", ifLose: "$0.00", ev: "+$1.12"
+  },
+  {
+    action: "BUY", side: "NO",
+    title: "Jesus Christ Return Before GTA VI - NO",
+    price: 0.515, alloc: 3.00, confidence: 99, risk: 1,
+    endDate: "2026-07-31", category: "culture",
+    thesis: "The ultimate free money trade. NO at 51.5Â¢ pays $1 when GTA VI ships without the Second Coming. Meme market with real liquidity. Lock in 94% return.",
+    ifWin: "$5.83", ifLose: "$0.00", ev: "+$2.80"
+  },
+  {
+    action: "BUY", side: "YES",
+    title: "Ripple Labs IPO Before 2027",
+    price: 0.125, alloc: 3.22, confidence: 25, risk: 3,
+    endDate: "2026-12-31", category: "finance",
+    thesis: "Speculative longshot. Ripple has signaled IPO intent and SEC settlement cleared path. At 12.5Â¢, the 8:1 payout makes this a lottery ticket worth holding.",
+    ifWin: "$25.76", ifLose: "$0.00", ev: "+$3.22"
+  }
+];
+
+const avoids = [
+  {title:"Bitcoin Hits $1M Before GTA VI", reason:"Priced at 49Â¢ â wildly overvalued. BTC would need 10x in 15 months. Pure meme premium, terrible risk/reward."},
+  {title:"Trump Out as President Before GTA VI", reason:"At 52.5Â¢, implies coin-flip odds of removal. No impeachment proceedings or 25th Amendment momentum justifies this price."},
+  {title:"China Invades Taiwan Before GTA VI", reason:"At 52.5Â¢, insanely overpriced. No military buildup or diplomatic signals. GTA VI meme markets distort all probabilities."},
+  {title:"New Pandemic in 2026", reason:"At 12Â¢ â ambiguous resolution criteria. What counts as 'new pandemic'? Definitional risk makes this untradeable."},
+  {title:"MegaETH FDV >$2B on Launch", reason:"Crypto launch markets are pure gambling. No fundamental basis for valuation. Skip entirely."},
+  {title:"Wolves Finish Last in EPL", reason:"At 53Â¢ â close to a coin flip. Multiple relegation candidates make this unpredictable. Better EPL edges elsewhere."}
+];
+
+const allMarkets = [
+  {q:"Dem Presidential Nominee 2028 â Jon Ossoff",yes:0.071,vol:"$7.4M",end:"2028-11-07",cat:"politics"},
+  {q:"Dem Presidential Nominee 2028 â Pete Buttigieg",yes:0.039,vol:"$9.8M",end:"2028-11-07",cat:"politics"},
+  {q:"Kevin Warsh Confirmed as Fed Chair",yes:0.962,vol:"$21.3M",end:"2026-06-30",cat:"politics"},
+  {q:"Democrats Control Senate After 2026 Midterms",yes:0.515,vol:"$15.2M",end:"2026-11-03",cat:"politics"},
+  {q:"Republicans Win Florida Senate 2026",yes:0.870,vol:"$8.4M",end:"2026-11-03",cat:"politics"},
+  {q:"Democrats Win Wisconsin Governor 2026",yes:0.805,vol:"$5.1M",end:"2026-11-03",cat:"politics"},
+  {q:"Graham Platner Dem Nominee for ME Senate",yes:0.915,vol:"$1.2M",end:"2026-07-31",cat:"politics"},
+  {q:"Starmer Out by June 30, 2026",yes:0.265,vol:"$4.8M",end:"2026-06-30",cat:"politics"},
+  {q:"Trump Resign by Dec 31, 2026",yes:0.065,vol:"$12.3M",end:"2026-12-31",cat:"politics"},
+  {q:"ErdoÄan Out by Dec 31, 2026",yes:0.165,vol:"$3.2M",end:"2026-12-31",cat:"geopolitics"},
+  {q:"China Invade Taiwan by End of 2026",yes:0.099,vol:"$8.7M",end:"2026-12-31",cat:"geopolitics"},
+  {q:"China Blockade Taiwan by June 30",yes:0.047,vol:"$999K",end:"2026-06-30",cat:"geopolitics"},
+  {q:"China-India Military Clash by 2026",yes:0.155,vol:"$2.1M",end:"2026-12-31",cat:"geopolitics"},
+  {q:"Barcelona Win 2025-26 La Liga",yes:0.940,vol:"$9.98M",end:"2026-05-30",cat:"sports"},
+  {q:"Manchester City Win 2025-26 EPL",yes:0.135,vol:"$9.98M",end:"2026-05-27",cat:"sports"},
+  {q:"Wolves Finish Last in EPL 2025-26",yes:0.531,vol:"$3.2M",end:"2026-05-27",cat:"sports"},
+  {q:"Bayern Munich Win Champions League",yes:0.225,vol:"$6.5M",end:"2026-05-31",cat:"sports"},
+  {q:"Harry Kane Top UCL Goal Scorer",yes:0.240,vol:"$2.8M",end:"2026-05-30",cat:"sports"},
+  {q:"PSG Win 2025-26 Ligue 1",yes:0.935,vol:"$4.1M",end:"2026-05-30",cat:"sports"},
+  {q:"Lamine Yamal Win 2026 Ballon d'Or",yes:0.225,vol:"$5.4M",end:"2026-10-31",cat:"sports"},
+  {q:"Scottie Scheffler Win 2026 Masters",yes:0.135,vol:"$7.2M",end:"2026-04-13",cat:"sports"},
+  {q:"Argentina Win 2026 FIFA World Cup",yes:0.092,vol:"$14.5M",end:"2026-07-20",cat:"sports"},
+  {q:"Cleveland Cavs Win 2026 NBA Finals",yes:0.048,vol:"$3.8M",end:"2026-07-01",cat:"sports"},
+  {q:"Boston Celtics Win 2026 NBA Finals",yes:0.119,vol:"$5.2M",end:"2026-07-01",cat:"sports"},
+  {q:"Detroit Pistons Win NBA East Finals",yes:0.145,vol:"$2.1M",end:"2026-06-13",cat:"sports"},
+  {q:"Ethereum Reach $3,500 by Dec 2026",yes:0.335,vol:"$8.9M",end:"2027-01-01",cat:"crypto"},
+  {q:"Bitcoin Hit $1M Before GTA VI",yes:0.488,vol:"$3.9M",end:"2026-07-31",cat:"crypto"},
+  {q:"MegaETH Airdrop by June 30",yes:0.483,vol:"$2.4M",end:"2026-02-01",cat:"crypto"},
+  {q:"OpenSea FDV Above $500M at Launch",yes:0.396,vol:"$4.2M",end:"2027-01-01",cat:"crypto"},
+  {q:"Ripple Labs IPO Before 2027",yes:0.125,vol:"$3.1M",end:"2026-12-31",cat:"finance"},
+  {q:"Kraken IPO by Dec 31, 2026",yes:0.290,vol:"$2.8M",end:"2026-12-31",cat:"finance"},
+  {q:"MicroStrategy Sells BTC by Dec 2026",yes:0.120,vol:"$22.0M",end:"2026-12-31",cat:"finance"},
+  {q:"Nasdaq Round-the-Clock Trading by June 30",yes:0.130,vol:"$38.8K",end:"2026-06-30",cat:"finance"},
+  {q:"GTA VI Released Before June 2026",yes:0.012,vol:"$13.2M",end:"2026-05-31",cat:"culture"},
+  {q:"Russia-Ukraine Ceasefire Before GTA VI",yes:0.535,vol:"$1.4M",end:"2026-07-31",cat:"culture"},
+  {q:"Jesus Christ Return Before GTA VI",yes:0.485,vol:"$10.9M",end:"2026-07-31",cat:"culture"},
+  {q:"Rihanna New Album Before GTA VI",yes:0.645,vol:"$682K",end:"2026-07-31",cat:"culture"},
+  {q:"Trump Out as President Before GTA VI",yes:0.525,vol:"$575K",end:"2026-07-31",cat:"culture"},
+  {q:"New Pandemic in 2026",yes:0.120,vol:"$5.8M",end:"2026-12-31",cat:"geopolitics"},
+  {q:"US Confirm Aliens Exist Before 2027",yes:0.175,vol:"$23.9M",end:"2027-01-01",cat:"culture"},
+  {q:"Forsen Beat xQc Minecraft Record",yes:0.220,vol:"$255K",end:"2026-12-31",cat:"culture"},
+  {q:"AOC Win 2028 Presidential Election",yes:0.058,vol:"$3.1M",end:"2028-11-07",cat:"politics"},
+  {q:"Kamala Harris Win 2028 Presidential Election",yes:0.031,vol:"$4.5M",end:"2028-11-07",cat:"politics"},
+  {q:"Monero Hit $1000 in 2026",yes:0.170,vol:"$87.8K",end:"2026-12-31",cat:"crypto"},
+  {q:"Macron Out by June 30, 2026",yes:0.028,vol:"$1.8M",end:"2026-06-30",cat:"politics"},
+  {q:"Chet Holmgren Win NBA DPOY 2025-26",yes:0.052,vol:"$1.4M",end:"2026-06-30",cat:"sports"}
+];
+
+const trending = [
+  {q:"Nasdaq Round-the-Clock Trading by June 30?", yes:0.13, vol:"$38.8K"},
+  {q:"Monero Hit $1000 in 2026?", yes:0.17, vol:"$87.8K"},
+  {q:"Russia-Ukraine Ceasefire Before GTA VI?", yes:0.535, vol:"$1.4M"},
+  {q:"Jesus Christ Return Before GTA VI?", yes:0.485, vol:"$10.9M"},
+  {q:"How High Will Inflation Get in 2026?", yes:0.63, vol:"$399K"},
+  {q:"Forsen Beat xQc Minecraft Record?", yes:0.22, vol:"$255K"},
+  {q:"US Crude Oil Reserves Fall by May 1?", yes:0.20, vol:"$288K"},
+  {q:"Law Banning Sports Prediction Markets in 2026?", yes:0.09, vol:"$9.5K"}
+];
+
+// ===================== RENDER RECOMMENDATIONS =====================
+const recGrid = document.getElementById('recGrid');
+recommendations.forEach(r => {
+  const riskDots = Array.from({length:3}, (_,i) => `<div class="risk-dot ${i<r.risk?'filled':''}"></div>`).join('');
+  recGrid.innerHTML += `
+    <div class="rec-card">
+      <div class="badge ${r.action.toLowerCase()}">${r.action} ${r.side}</div>
+      <h3>${r.title}</h3>
+      <div class="rec-meta">
+        <span class="price-tag">${(r.price*100).toFixed(1)}Â¢</span>
+        <span class="alloc-tag">$${r.alloc.toFixed(2)}</span>
+        <span>ð ${r.endDate}</span>
+      </div>
+      <div class="conf-bar"><div class="conf-fill" style="width:${r.confidence}%"></div></div>
+      <div class="rec-meta">
+        <span>Confidence: ${r.confidence}%</span>
+        <span>Risk: ${riskDots}</span>
+        <span class="ev-tag ${r.ev.startsWith('+')?'ev-pos':'ev-neg'}">EV: ${r.ev}</span>
+      </div>
+      <div class="thesis">${r.thesis}</div>
+      <div class="rec-meta" style="margin-top:8px">
+        <span style="color:var(--green)">Win: ${r.ifWin}</span>
+        <span style="color:var(--red)">Lose: ${r.ifLose}</span>
+      </div>
+    </div>`;
 });
+
+// ===================== RENDER ALLOCATION CHART =====================
+new Chart(document.getElementById('allocChart'), {
+  type: 'doughnut',
+  data: {
+    labels: recommendations.map(r => r.title.substring(0,25) + '...'),
+    datasets: [{
+      data: recommendations.map(r => r.alloc),
+      backgroundColor: ['#6366f1','#8b5cf6','#a78bfa','#10b981','#3b82f6','#f59e0b','#ef4444'],
+      borderColor: '#111827', borderWidth: 2
+    }]
+  },
+  options: {
+    plugins: {
+      legend: { position:'right', labels: { color:'#8892a4', font:{size:11}, padding:8 } }
+    }
+  }
 });
 
-// Allocation chart
-new Chart(document.getElementById('allocChart'),{type:'doughnut',data:{labels:['Dems House ($8)','Anthropic AI June ($6)','AI IMO Gold ($4)','S.Korea DP ($4)','Crypto Hack ($3)','Monero ($3)'],datasets:[{data:[8,6,4,4,3,3],backgroundColor:['#6366f1','#818cf8','#3b82f6','#10b981','#f59e0b','#ef4444'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#8892a4',font:{size:11},padding:8}}}}});
-
-// Risk chart
-new Chart(document.getElementById('riskChart'),{type:'doughnut',data:{labels:['High Confidence / Risk 1 ($12)','Medium Confidence / Risk 2 ($13)','Speculative / Risk 3 ($3)'],datasets:[{data:[12,13,3],backgroundColor:['#10b981','#f59e0b','#ef4444'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#8892a4',font:{size:11},padding:8}}}}});
-
-// Category chart
-new Chart(document.getElementById('catChart'),{type:'doughnut',data:{labels:['Politics','Sports','Crypto','AI','Finance','Culture'],datasets:[{data:[2100,820,420,110,72,25],backgroundColor:['#6366f1','#3b82f6','#f59e0b','#10b981','#818cf8','#ef4444'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#8892a4',font:{size:11},padding:8}},title:{display:true,text:'Est. Volume ($M)',color:'#8892a4'}}}});
-
-// Top events bar chart
-new Chart(document.getElementById('topEventsChart'),{type:'bar',data:{labels:['Dem Nominee 2028','GOP Nominee 2028','FIFA World Cup','Pres. Winner 2028','NBA Champion','Netanyahu','US√óIran','F1 Champion'],datasets:[{label:'Volume ($M)',data:[984,521,507,492,230,114,94,83],backgroundColor:'#6366f1',borderRadius:4}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8892a4',callback:v=>'$'+v+'M'},grid:{color:'rgba(30,42,74,.3)'}},y:{ticks:{color:'#e1e5ee',font:{size:11}},grid:{display:false}}}}});
-
-// Opportunity filters
-const filterCat=document.getElementById('filterCat');
-const filterRisk=document.getElementById('filterRisk');
-const filterSearch=document.getElementById('filterSearch');
-function filterOpps(){
-const cat=filterCat.value,risk=filterRisk.value,q=filterSearch.value.toLowerCase();
-document.querySelectorAll('#oppGrid .opp-card').forEach(c=>{
-const show=(cat==='all'||c.dataset.cat===cat)&&(risk==='all'||c.dataset.risk===risk)&&(!q||c.textContent.toLowerCase().includes(q));
-c.style.display=show?'':'none';
+// ===================== RENDER CHECKLIST =====================
+const checklist = document.getElementById('checklist');
+recommendations.forEach((r,i) => {
+  checklist.innerHTML += `<div class="check-item" id="ci${i}">
+    <input type="checkbox" onchange="this.parentElement.classList.toggle('done')">
+    <span>${r.action} ${r.side} â ${r.title} @ ${(r.price*100).toFixed(1)}Â¢ â $${r.alloc.toFixed(2)}</span>
+  </div>`;
 });
+
+// ===================== RENDER AVOIDS =====================
+const avoidGrid = document.getElementById('avoidGrid');
+avoids.forEach(a => {
+  avoidGrid.innerHTML += `<div class="avoid-card">
+    <h4><span class="badge avoid" style="position:static">AVOID</span> ${a.title}</h4>
+    <p>${a.reason}</p>
+  </div>`;
+});
+
+// ===================== RENDER OVERVIEW CHARTS =====================
+const catData = {politics:0,sports:0,crypto:0,culture:0,finance:0,geopolitics:0};
+allMarkets.forEach(m => { const v = parseFloat(m.vol.replace(/[$,KM]/g,'')); const mult = m.vol.includes('M')?1e6:m.vol.includes('K')?1e3:1; catData[m.cat] = (catData[m.cat]||0) + v*mult; });
+
+new Chart(document.getElementById('catChart'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(catData).map(c=>c.charAt(0).toUpperCase()+c.slice(1)),
+    datasets: [{
+      data: Object.values(catData).map(v=>Math.round(v/1e6)),
+      backgroundColor: ['#6366f1','#10b981','#f59e0b','#ec4899','#3b82f6','#ef4444'],
+      borderColor: '#111827', borderWidth: 2
+    }]
+  },
+  options: { plugins: { legend: { position:'right', labels:{color:'#8892a4',font:{size:11}} }, title:{display:true,text:'Volume by Category ($M)',color:'#8892a4'} } }
+});
+
+const topMkts = [...allMarkets].sort((a,b) => {
+  const parse = s => { const v=parseFloat(s.replace(/[$,KM]/g,'')); return s.includes('M')?v*1e6:s.includes('K')?v*1e3:v; };
+  return parse(b.vol)-parse(a.vol);
+}).slice(0,8);
+
+new Chart(document.getElementById('topChart'), {
+  type: 'bar',
+  data: {
+    labels: topMkts.map(m=>m.q.substring(0,30)+'...'),
+    datasets: [{ data: topMkts.map(m=>{const v=parseFloat(m.vol.replace(/[$,KM]/g,''));return m.vol.includes('M')?v:m.vol.includes('K')?v/1000:v/1e6;}), backgroundColor:'#6366f1', borderRadius:6 }]
+  },
+  options: { indexAxis:'y', plugins:{legend:{display:false},title:{display:true,text:'Volume ($M)',color:'#8892a4'}}, scales:{x:{ticks:{color:'#8892a4'},grid:{color:'rgba(30,42,74,.3)'}},y:{ticks:{color:'#8892a4',font:{size:10}},grid:{display:false}}} }
+});
+
+// ===================== RENDER TRENDING =====================
+const trendingList = document.getElementById('trendingList');
+trending.forEach(t => {
+  trendingList.innerHTML += `<div class="opp-card"><h3>${t.q}</h3><div class="opp-meta"><span>YES: ${(t.yes*100).toFixed(1)}Â¢</span><span>Vol: ${t.vol}</span></div></div>`;
+});
+
+// ===================== RENDER OPPORTUNITIES =====================
+const opportunities = allMarkets.filter(m => m.yes > 0.05 && m.yes < 0.85).sort((a,b) => {
+  const parse = s => { const v=parseFloat(s.replace(/[$,KM]/g,'')); return s.includes('M')?v*1e6:s.includes('K')?v*1e3:v; };
+  return parse(b.vol)-parse(a.vol);
+});
+
+function renderOpp(filter) {
+  const oppList = document.getElementById('oppList');
+  oppList.innerHTML = '';
+  const filtered = filter === 'all' ? opportunities : opportunities.filter(m => m.cat === filter);
+  filtered.forEach(m => {
+    oppList.innerHTML += `<div class="opp-card" data-cat="${m.cat}">
+      <h3>${m.q}</h3>
+      <div class="opp-meta">
+        <span style="color:var(--accent);font-weight:600">YES: ${(m.yes*100).toFixed(1)}Â¢</span>
+        <span>Vol: ${m.vol}</span>
+        <span>Ends: ${m.end}</span>
+        <span style="text-transform:capitalize">${m.cat}</span>
+      </div>
+    </div>`;
+  });
 }
-filterCat.onchange=filterOpps;filterRisk.onchange=filterOpps;filterSearch.oninput=filterOpps;
+renderOpp('all');
+function filterOpp(cat, btn) {
+  document.querySelectorAll('#panel2 .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOpp(cat);
+}
 
-// Market table search
-document.getElementById('marketSearch').oninput=function(){
-const q=this.value.toLowerCase();
-document.querySelectorAll('#marketTable tbody tr').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'});
-};
+// ===================== RENDER ALL MARKETS TABLE =====================
+let currentSort = -1; let sortDir = 1;
+function renderMarkets(filter) {
+  const body = document.getElementById('marketBody');
+  body.innerHTML = '';
+  const filtered = filter === 'all' ? allMarkets : allMarkets.filter(m => m.cat === filter);
+  filtered.forEach(m => {
+    const yesColor = m.yes >= 0.7 ? 'var(--green)' : m.yes <= 0.2 ? 'var(--red)' : 'var(--text)';
+    body.innerHTML += `<tr data-cat="${m.cat}">
+      <td>${m.q}</td>
+      <td style="color:${yesColor};font-weight:600">${(m.yes*100).toFixed(1)}Â¢</td>
+      <td>${m.vol}</td>
+      <td>${m.end}</td>
+      <td style="text-transform:capitalize">${m.cat}</td>
+    </tr>`;
+  });
+}
+renderMarkets('all');
+function filterMkt(cat, btn) {
+  document.querySelectorAll('#panel3 .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMarkets(cat);
+}
+function sortTable(col) {
+  if(currentSort===col) sortDir*=-1; else { currentSort=col; sortDir=1; }
+  const body = document.getElementById('marketBody');
+  const rows = Array.from(body.rows);
+  rows.sort((a,b) => {
+    let va=a.cells[col].textContent, vb=b.cells[col].textContent;
+    if(col===1){va=parseFloat(va);vb=parseFloat(vb);}
+    else if(col===2){const p=s=>{const v=parseFloat(s.replace(/[$,KM]/g,''));return s.includes('M')?v*1e6:s.includes('K')?v*1e3:v;};va=p(va);vb=p(vb);}
+    return (va>vb?1:va<vb?-1:0)*sortDir;
+  });
+  rows.forEach(r=>body.appendChild(r));
+}
 
-// EV Calculator
-function calcEV(){
-const p=parseFloat(document.getElementById('evProb').value)/100;
-const price=parseFloat(document.getElementById('evPrice').value)/100;
-const bet=parseFloat(document.getElementById('evBet').value);
-const shares=bet/price;
-const ifWin=shares*1;
-const profit=ifWin-bet;
-const ev=p*profit-(1-p)*bet;
-const kelly=(p-price)/(1-price);
-const r=document.getElementById('evResult');
-r.innerHTML=`
-<div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:8px">
-<div><strong>Shares:</strong> ${shares.toFixed(2)}</div>
-<div><strong>If Win:</strong> <span style="color:var(--green)">$${ifWin.toFixed(2)} (+$${profit.toFixed(2)})</span></div>
-<div><strong>If Lose:</strong> <span style="color:var(--red)">-$${bet.toFixed(2)}</span></div>
-<div><strong>EV:</strong> <span style="color:${ev>=0?'var(--green)':'var(--red)'}">$${ev.toFixed(2)}</span></div>
-<div><strong>Edge:</strong> ${((p-price)*100).toFixed(1)}%</div>
-<div><strong>Kelly:</strong> ${(kelly*100).toFixed(1)}% of bankroll</div>
-</div>`;
+// ===================== TAB SWITCHING =====================
+function switchTab(n) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===n));
 }
 </script>
 </body>
